@@ -8,6 +8,10 @@
   const KEYS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm'];
   const CHORD_PATTERN = /\[([A-G](?:#|b)?(?:(?:maj|m|sus|add)\d*|dim|aug|\d*)?)\]/g;
 
+const GITHUB_TOKEN = "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"; 
+const GITHUB_USERNAME = "emalkumarasiri";
+const GITHUB_REPO = "app-";
+const GITHUB_FILE = "songs.json";
   const $ = selector => document.querySelector(selector);
   const els = {
     login: $('#login-screen'), loginForm: $('#login-form'), password: $('#admin-password'), loginError: $('#login-error'),
@@ -32,6 +36,7 @@
   function saveLocalSongs() {
     try {
       localStorage.setItem(DATA_KEY, JSON.stringify(songs));
+      pushToGitHub(songs);
       return true;
     } catch {
       setStatus('මෙම browser එකේ localStorage වෙත සුරැකිය නොහැකි විය.', true);
@@ -269,5 +274,22 @@
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(error => console.warn('Service worker registration failed:', error));
   }
-  if (sessionStorage.getItem(AUTH_KEY) === '1') loginSuccess();
+ if (sessionStorage.getItem(AUTH_KEY) === '1') loginSuccess();
+  async function pushToGitHub(songs) {
+    const getFile = await fetch(```https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${GITHUB_FILE}```, {
+      headers: { Authorization: token ${GITHUB_TOKEN} }
+    });
+    const fileData = await getFile.json();
+    await fetch(```https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${GITHUB_FILE}```, {
+      method: "PUT",
+      headers: { Authorization: token ${GITHUB_TOKEN}, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: "update song",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(songs, null, 2)))),
+        sha: fileData.sha
+      })
+    });
+    alert("GitHub එකට ගියා! ✅");
+  }
 })();
+
