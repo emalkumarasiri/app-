@@ -1,0 +1,42 @@
+[
+  {
+    "number": 1,
+    "title": "Yesu Mama Saranai",
+    "category": "Prashansa",
+    "key": "G",
+    "lyrics": "[G]මෙය නියැදි පද පෙළකි [C]ස්වර රටාව බලන්න\n[D]ඔබගේ අවසර ලත් ගී පද [G]මෙහි ඇතුළත් කරන්න",
+    "demoLyrics": true
+  },
+  {
+    "number": 2,
+    "title": "Mage Jeewithe",
+    "category": "Namaskara",
+    "key": "C",
+    "lyrics": "[C]නියැදි පද මෙහි [F]දර්ශනය වේ\n[G]නිවැරදි ගී පද [C]යාවත්කාලීන කරන්න",
+    "demoLyrics": true
+  },
+  {
+    "number": 3,
+    "title": "Deva Meheya Karana",
+    "category": "Deva Meheya",
+    "key": "D",
+    "lyrics": "[D]මෙය නියැදි පද [G]සහිත ගීතිකාවකි\n[A]ඔබේ ගී පද [D]පරිපාලකෙන් එක් කරන්න",
+    "demoLyrics": true
+  },
+  {
+    "number": 4,
+    "title": "Api Midu Sathata",
+    "category": "Christmas",
+    "key": "A",
+    "lyrics": "[A]නියැදි ගී පද [D]මෙහි ඇත\n[E]අවසර ඇති පද [A]එකතු කරන්න",
+    "demoLyrics": true
+  },
+  {
+    "number": 5,
+    "title": "Etha Golgothawe",
+    "category": "Namaskara",
+    "key": "Em",
+    "lyrics": "[Em]මෙය chord පෙන්වන [C]නියැදි පෙළකි\n[B7]ඔබගේ ගී පද [Em]මෙහි යාවත්කාලීන කරන්න",
+    "demoLyrics": true
+  }
+]

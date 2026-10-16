@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="si">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef7ff">
+  <meta name="description" content="GeethikaLK Admin — manage geethikas and chord sheets.">
+  <title>Admin — GeethikaLK</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="admin-page">
+  <header class="site-header"><div class="header-inner"><a class="brand" href="./" aria-label="GeethikaLK home"><span class="brand-cross" aria-hidden="true">✝</span><span>Geethika<span class="brand-lk">LK</span> <small>ADMIN</small></span></a><div class="header-actions"><a class="admin-link" href="./">← පරිශීලක යෙදුම</a><button class="admin-link" id="logout-button" type="button" hidden>ඉවත් වන්න</button></div></div></header>
+  <main class="admin-shell">
+    <section class="login-wrap" id="login-screen" aria-labelledby="login-title">
+      <form class="login-card" id="login-form">
+        <span class="login-icon" aria-hidden="true">✝</span>
+        <h1 id="login-title">පරිපාලක පිවිසුම</h1>
+        <p>GeethikaLK ගීතිකා කළමනාකරණය සඳහා පිවිසෙන්න.</p>
+        <div class="field"><label for="admin-password">මුරපදය</label><input id="admin-password" type="password" autocomplete="current-password" required placeholder="මුරපදය ඇතුළත් කරන්න"></div>
+        <button class="btn btn-primary" type="submit">පිවිසෙන්න <span aria-hidden="true">→</span></button>
+        <div class="login-error" id="login-error" role="alert"></div>
+        <div class="security-note">මෙය client-side demo login එකකි. මුරපදය JavaScript හි ඇත; static hosting එකකදී මෙය සැබෑ ආරක්ෂිත login ක්‍රමයක් නොවේ.</div>
+      </form>
+    </section>
+
+    <section id="admin-dashboard" hidden>
+      <div class="admin-top"><div><p class="section-kicker">GEETHIKALK / ADMIN PANEL</p><h1>ගීතිකා කළමනාකරණය</h1><p>ගීතිකා එක් කරන්න, සංස්කරණය කරන්න, සහ JSON යාවත්කාලීන කරන්න.</p></div><span class="song-count" id="admin-song-count">ගීතිකා 0</span></div>
+      <div class="admin-warning"><strong>වැදගත්:</strong> Save කළ දත්ත මෙම browser එකේ localStorage තුළයි. එය සියලු අමුත්තන්ට ලබාදීමට පහත JSON ගොනුව <code>geethika.json</code> ලෙස site එකේ යාවත්කාලීන කරන්න.</div>
+      <div class="admin-layout">
+        <section class="panel" aria-labelledby="form-title">
+          <div class="panel-heading"><div><h2 id="form-title">ගීතිකාව එක් කරන්න / සංස්කරණය කරන්න</h2><p>පද ඇතුළත් කර chord preview එක බලන්න.</p></div><span class="song-count" id="form-mode">නව ගීතිකාව</span></div>
+          <form id="song-form">
+            <input id="original-number" type="hidden">
+            <div class="inline-fields"><div class="field"><label for="song-number">Number</label><input id="song-number" type="number" min="1" step="1" required placeholder="1"></div><div class="field"><label for="song-title-input">Title (Sinhala)</label><input id="song-title-input" type="text" required placeholder="ගීතිකාවේ නම" autocomplete="off"></div></div>
+            <div class="inline-fields second-row"><div class="field"><label for="song-category">Category</label><select id="song-category" required><option value="Prashansa">Prashansa</option><option value="Namaskara">Namaskara</option><option value="Deva Meheya">Deva Meheya</option><option value="Christmas">Christmas</option></select></div><div class="field"><label for="song-key">Key</label><select id="song-key" required></select></div></div>
+            <div class="field"><label for="song-lyrics">Lyrics with Chords</label><textarea id="song-lyrics" class="code-input" required spellcheck="false" placeholder="[G]Yesu [C]mama [D]saranai&#10;[G]ඔබගේ ගී පද මෙහි එක් කරන්න"></textarea><span class="field-help">Type like [G]Yesu [C]mama — chord එකක් සඳහා [G], [C], [D] ලෙස ලියන්න. සෑම පේළියක්ම වෙනම තබන්න.</span></div>
+            <div class="form-actions"><button class="btn btn-primary" type="submit">Save Geethika</button><button class="btn btn-secondary" id="clear-form" type="button">Clear</button><button class="btn btn-soft" id="export-json" type="button">Export JSON ↓</button></div>
+            <div class="admin-status" id="admin-status" role="status"></div>
+          </form>
+        </section>
+        <div class="admin-right">
+          <section class="panel" aria-labelledby="preview-title"><div class="panel-heading"><div><h2 id="preview-title">Live Preview</h2><p>චෝර්ඩ්ස් පදයට ඉහළින් පෙන්වයි.</p></div></div><div class="preview-song"><div class="preview-meta"><span id="preview-number">No. 1</span><span>·</span><span id="preview-category">Prashansa</span></div><h3 id="preview-name">ගීතිකාවේ නම</h3><div class="preview-key" id="preview-key">Key: G</div><div class="preview-lyrics" id="preview-lyrics"><span class="preview-placeholder">පද මෙහි දිස්වේ…</span></div></div></section>
+          <section class="panel" aria-labelledby="existing-title"><div class="panel-heading"><div><h2 id="existing-title">දැනට ඇති ගීතිකා</h2><p>Edit හෝ Delete තෝරන්න.</p></div></div><div class="song-admin-list" id="song-admin-list"></div></section>
+          <section class="panel json-panel" aria-labelledby="json-title"><div class="panel-heading"><div><h2 id="json-title">JSON ගොනුව</h2><p>අලුත්ම geethika ලැයිස්තුව.</p></div></div><div class="field"><textarea class="json-output" id="json-output" readonly aria-label="Geethika JSON export"></textarea></div><p class="json-instruction">Copy this JSON to geethika.json file to make it live permanently</p><div class="json-actions"><button class="btn btn-secondary" id="copy-json" type="button">Copy JSON</button><label class="btn btn-soft" for="import-file">Import JSON ↑</label><input class="import-input" id="import-file" type="file" accept=".json,application/json"></div><div class="admin-status" id="import-status" role="status"></div></section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="./admin.js" defer></script>
+</body>
+</html>

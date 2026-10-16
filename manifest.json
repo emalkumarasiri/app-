@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "GeethikaLK — සිංහල ක්‍රිස්තියානි ගීතිකා",
+  "short_name": "GeethikaLK",
+  "description": "Sinhala Christian hymns with lyrics and chords.",
+  "lang": "si",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7fbff",
+  "theme_color": "#eef7ff",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
