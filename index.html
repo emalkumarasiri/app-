@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#eef7ff">
   <meta name="description" content="GeethikaLK — Sinhala Christian geethika, chords, favourites and offline access.">
-  <title>GeethikaLK — සිංහල ගීතිකා සහ Chords</title>
+  <title>Geethika.LK</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,13 +23,9 @@
 
   <main class="app-shell">
     <section class="home-view" id="home-view" aria-labelledby="home-title">
-      <div class="hero-banner">
-        <div class="hero-copy"><p class="eyebrow"><span class="eyebrow-cross" aria-hidden="true">✝</span> සිංහල ක්‍රිස්තියානි ගීතිකා එකතුව</p><h1 id="home-title">ගීතිකාවක් තෝරන්න<span class="hero-dot">.</span></h1><p class="hero-subtitle">පද, ස්වර සහ සංගීතය — එකම තැනකින්.</p></div>
-        <div class="hero-emblem" aria-hidden="true"><span class="emblem-ring ring-one"></span><span class="emblem-ring ring-two"></span><span class="emblem-cross">✝</span><span class="emblem-rays">✦</span></div>
-      </div>
       <div class="catalog-section">
-        <div class="catalog-top"><div><p class="section-kicker">GEETHIKALK / LIBRARY</p><h2>ගීතිකා එකතුව</h2></div><span class="song-count" id="song-count">ගීතිකා 0</span></div>
-        <label class="search-wrap" for="song-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="song-search" type="search" placeholder="ගීතිකාවක් සොයන්න…" autocomplete="off"><kbd>⌘ K</kbd></label>
+        <div class="catalog-top"><div><p class="section-kicker">GEETHIKALK / LIBRARY</p></div><span class="song-count" id="song-count">0 song</span></div>
+        <label class="search-wrap" for="song-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="song-search" type="search" placeholder="search…" autocomplete="off"><kbd>⌘ K</kbd></label>
         <div class="category-bar" id="category-bar" role="group" aria-label="ගීතිකා වර්ගය"></div>
         <div class="song-grid" id="song-grid" aria-live="polite"></div>
         <div class="empty-state" id="empty-state" hidden><span aria-hidden="true">✝</span><h3>ගීතිකා හමු නොවීය</h3><p>වෙනත් වචනයක් හෝ වර්ගයක් තෝරා නැවත සොයන්න.</p></div>
@@ -37,17 +33,15 @@
     </section>
 
     <section class="song-view" id="song-view" aria-labelledby="song-title" hidden>
-      <button class="back-button" id="back-button" type="button"><span aria-hidden="true">←</span> ගීතිකා එකතුවට</button>
+      <button class="back-button" id="back-button" type="button"><span aria-hidden="true">←</span>back</button>
       <div class="song-heading"><div><div class="song-meta-line"><span class="song-number" id="view-number"></span><span class="meta-separator">/</span><span class="song-category" id="view-category"></span></div><h1 id="song-title"></h1><p class="original-key" id="original-key"></p></div><span class="song-cross" aria-hidden="true">✝</span></div>
       <div class="song-toolbar" role="toolbar" aria-label="ගීතිකා පාලක">
-        <div class="tool-group transpose-group"><span class="tool-caption">ස්වරය</span><button class="tool-button" id="transpose-down" type="button" aria-label="ස්වරය අඩු කරන්න">−</button><span class="current-key" id="current-key">Key: G</span><button class="tool-button" id="transpose-up" type="button" aria-label="ස්වරය වැඩි කරන්න">+</button></div>
-        <div class="tool-group font-group"><span class="tool-caption">අකුරු</span><button class="tool-button" id="font-down" type="button" aria-label="අකුරු කුඩා කරන්න">A−</button><button class="tool-button" id="font-up" type="button" aria-label="අකුරු විශාල කරන්න">A+</button></div>
+        <div class="tool-group transpose-group"><span class="tool-caption">Transpose</span><button class="tool-button" id="transpose-down" type="button" aria-label="ස්වරය අඩු කරන්න">−</button><span class="current-key" id="current-key">Key: G</span><button class="tool-button" id="transpose-up" type="button" aria-label="ස්වරය වැඩි කරන්න">+</button></div>
+        <div class="tool-group font-group"><span class="tool-caption">Font size</span><button class="tool-button" id="font-down" type="button" aria-label="අකුරු කුඩා කරන්න">A−</button><button class="tool-button" id="font-up" type="button" aria-label="අකුරු විශාල කරන්න">A+</button></div>
         <button class="tool-button scroll-button" id="autoscroll-button" type="button" aria-pressed="false"><span aria-hidden="true">▶</span><span>AutoScroll</span></button>
-        <button class="tool-button favourite-button" id="favourite-button" type="button" aria-pressed="false" aria-label="ප්‍රියතම ගීතිකාවක් ලෙස සලකුණු කරන්න"><span aria-hidden="true">☆</span><span class="favourite-label">ප්‍රියතම</span></button>
+        <button class="tool-button favourite-button" id="favourite-button" type="button" aria-pressed="false" aria-label="ප්‍රියතම ගීතිකාවක් ලෙස සලකුණු කරන්න"><span aria-hidden="true">☆</span><span class="favourite-label">Favorites</span></button>
       </div>
       <div class="sample-notice" id="sample-notice" hidden><span aria-hidden="true">ⓘ</span> මෙය chord ආකෘතිය පෙන්වන නියැදි පෙළකි. ඔබට භාවිත කිරීමට අවසර ඇති ගී පද Admin වෙතින් යාවත්කාලීන කරන්න.</div>
-      <article class="lyrics-card"><div class="lyrics-topline"><span>පද සහ ස්වර</span><span class="lyrics-hint">ස්වර තැඹිලි පැහැයෙන්</span></div><div class="lyrics-content" id="lyrics-content" aria-live="polite"></div></article>
-      <div class="song-bottom-note"><span class="note-cross" aria-hidden="true">✝</span><span>සංගීතය තුළින් නමස්කාර කරමු</span><span class="note-rule"></span></div>
     </section>
   </main>
 
