@@ -4,14 +4,18 @@
   const ADMIN_PASSWORD = 'geethika2026';
   const DATA_KEY = 'geethikaLK.songs.v1';
   const AUTH_KEY = 'geethikaLK.adminSession';
+
+  // GitHub auto-sync settings.
+  // WARNING: This token will be visible to anyone who can view this public JavaScript.
+  const GITHUB_OWNER = 'emalkumarasiri';
+  const GITHUB_REPO = 'app-';
+  const GITHUB_BRANCH = 'main';
+  const GITHUB_FILE = 'geethika.json';
+  const GITHUB_TOKEN = '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';
   const CATEGORIES = ['Prashansa', 'Namaskara', 'Deva Meheya', 'Christmas'];
   const KEYS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm'];
   const CHORD_PATTERN = /\[([A-G](?:#|b)?(?:(?:maj|m|sus|add)\d*|dim|aug|\d*)?)\]/g;
 
-const GITHUB_TOKEN = "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"; 
-const GITHUB_USERNAME = "emalkumarasiri";
-const GITHUB_REPO = "app-";
-const GITHUB_FILE = "songs.json";
   const $ = selector => document.querySelector(selector);
   const els = {
     login: $('#login-screen'), loginForm: $('#login-form'), password: $('#admin-password'), loginError: $('#login-error'),
@@ -36,10 +40,9 @@ const GITHUB_FILE = "songs.json";
   function saveLocalSongs() {
     try {
       localStorage.setItem(DATA_KEY, JSON.stringify(songs));
-      pushToGitHub(songs);
       return true;
     } catch {
-      setStatus('මෙම browser එකේ localStorage වෙත සුරැකිය නොහැකි විය.', true);
+      setStatus('Could not save to local storage in this browser.', true);
       return false;
     }
   }
@@ -82,7 +85,7 @@ const GITHUB_FILE = "songs.json";
 
   function updatePreview() {
     const number = els.number.value.trim() || '1';
-    const title = els.title.value.trim() || 'ගීතිකාවේ නම';
+    const title = els.title.value.trim() || 'Song title';
     const category = els.category.value || CATEGORIES[0];
     const key = els.key.value || 'G';
     els.previewNumber.textContent = `No. ${number}`;
@@ -90,17 +93,17 @@ const GITHUB_FILE = "songs.json";
     els.previewName.textContent = title;
     els.previewKey.textContent = `Key: ${key}`;
     if (els.lyrics.value.trim()) renderChordLyrics(els.previewLyrics, els.lyrics.value);
-    else { els.previewLyrics.replaceChildren(); safeText(els.previewLyrics, 'span', 'preview-placeholder', 'පද මෙහි දිස්වේ…'); }
+    else { els.previewLyrics.replaceChildren(); safeText(els.previewLyrics, 'span', 'preview-placeholder', 'Lyrics will appear here…'); }
   }
 
   function writeJSON() {
     els.json.value = JSON.stringify(songs, null, 2);
-    els.count.textContent = `ගීතිකා ${songs.length}`;
+    els.count.textContent = `Songs: ${songs.length}`;
   }
 
   function renderList() {
     els.list.replaceChildren();
-    if (!songs.length) { safeText(els.list, 'p', 'field-help', 'තවම ගීතිකා නැත.'); return; }
+    if (!songs.length) { safeText(els.list, 'p', 'field-help', 'No songs added yet.'); return; }
     [...songs].sort((a, b) => Number(a.number) - Number(b.number)).forEach(song => {
       const row = document.createElement('div'); row.className = 'admin-song-row';
       const main = document.createElement('div'); main.className = 'admin-song-main';
@@ -115,17 +118,70 @@ const GITHUB_FILE = "songs.json";
     });
   }
 
+
+  function githubConfigured() {
+    return GITHUB_TOKEN && GITHUB_TOKEN !== 'PASTE_NEW_GITHUB_TOKEN_HERE';
+  }
+
+  async function syncToGitHub() {
+    if (!githubConfigured()) {
+      setStatus('Saved in this browser only. Configure GITHUB_TOKEN in admin.js to enable GitHub sync.', true);
+      return false;
+    }
+    setStatus('Saving to GitHub…');
+    try {
+      const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+      const headers = {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'X-GitHub-Api-Version': '2022-11-28'
+      };
+      const currentResponse = await fetch(apiUrl, { headers, cache: 'no-store' });
+      if (!currentResponse.ok) throw new Error(`GitHub read failed (${currentResponse.status}).`);
+      const current = await currentResponse.json();
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(songs, null, 2) + '\n')));
+      const saveResponse = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Update ${GITHUB_FILE} from GeethikaLK admin`,
+          content,
+          sha: current.sha,
+          branch: GITHUB_BRANCH
+        })
+      });
+      if (!saveResponse.ok) {
+        const details = await saveResponse.text();
+        throw new Error(`GitHub update failed (${saveResponse.status}): ${details}`);
+      }
+      setStatus('Saved locally and updated GitHub geethika.json.');
+      return true;
+    } catch (error) {
+      console.error(error);
+      setStatus(`Saved locally, but GitHub update failed: ${error.message}`, true);
+      return false;
+    }
+  }
+
+  async function loadSongsFromGitHub() {
+    const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE}`;
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Could not load ${GITHUB_FILE} from GitHub.`);
+    return normalizeImported(await response.json());
+  }
+
   function refreshData() {
     writeJSON();
     renderList();
     saveLocalSongs();
+    syncToGitHub();
   }
 
   function clearForm() {
     els.form.reset();
     els.originalNumber.value = '';
     els.key.value = 'G';
-    els.formMode.textContent = 'නව ගීතිකාව';
+    els.formMode.textContent = 'New song';
     setStatus('');
     updatePreview();
   }
@@ -137,7 +193,7 @@ const GITHUB_FILE = "songs.json";
     els.category.value = CATEGORIES.includes(song.category) ? song.category : CATEGORIES[0];
     els.key.value = KEYS.includes(song.key) ? song.key : 'C';
     els.lyrics.value = song.lyrics || '';
-    els.formMode.textContent = `සංස්කරණය: ${song.number}`;
+    els.formMode.textContent = `Editing: ${song.number}`;
     setStatus('');
     updatePreview();
     els.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -145,43 +201,51 @@ const GITHUB_FILE = "songs.json";
   }
 
   function deleteSong(song) {
-    if (!window.confirm(`“${song.title}” ගීතිකාව මකන්නද?`)) return;
+    if (!window.confirm(`Delete the song “${song.title}”?`)) return;
     songs = songs.filter(item => String(item.number) !== String(song.number));
     refreshData();
     clearForm();
-    setStatus('ගීතිකාව localStorage වෙතින් ඉවත් කරන ලදී. geethika.json යාවත්කාලීන කිරීමට JSON පිටපත් කරන්න.');
+    setStatus('Song removed locally. GitHub sync will be attempted automatically.');
   }
 
   function normalizeImported(items) {
-    if (!Array.isArray(items)) throw new Error('JSON ගොනුවේ ඉහළම මට්ටමේ array එකක් තිබිය යුතුය.');
+    if (!Array.isArray(items)) throw new Error('The JSON file must contain an array at the top level.');
     const result = items.map((item, index) => {
       if (!item || item.number === undefined || !String(item.title || '').trim() || !String(item.key || '').trim() || typeof item.lyrics !== 'string') {
-        throw new Error(`ගීතිකා අංක ${index + 1} සඳහා number, title, key සහ lyrics අවශ්‍යයි.`);
+        throw new Error(`Song item ${index + 1} must include number, title, key, and lyrics.`);
       }
       const category = CATEGORIES.includes(item.category) ? item.category : CATEGORIES[0];
       return { number: Number(item.number) || String(item.number), title: String(item.title).trim(), category, key: String(item.key).trim(), lyrics: item.lyrics, demoLyrics: Boolean(item.demoLyrics) };
     });
     const seen = new Set();
-    result.forEach(item => { const key = String(item.number); if (seen.has(key)) throw new Error(`අංකය ${key} දෙවරක් ඇත.`); seen.add(key); });
+    result.forEach(item => { const key = String(item.number); if (seen.has(key)) throw new Error(`Duplicate song number: ${key}.`); seen.add(key); });
     return result;
   }
 
-  function loginSuccess() {
+  async function loginSuccess() {
     els.login.hidden = true;
     els.dashboard.hidden = false;
     els.logout.hidden = false;
-    const localSongs = readLocalSongs();
-    if (localSongs) {
-      songs = localSongs;
+    clearForm();
+    setStatus('Loading songs from GitHub…');
+    try {
+      songs = await loadSongsFromGitHub();
       writeJSON();
       renderList();
-    } else {
-      fetch('./geethika.json', { cache: 'no-cache' })
-        .then(response => { if (!response.ok) throw new Error('geethika.json load failed'); return response.json(); })
-        .then(data => { songs = normalizeImported(data); writeJSON(); renderList(); })
-        .catch(error => { console.error(error); setStatus('geethika.json පූරණය කළ නොහැකි විය. Local server එකකින් විවෘත කරන්න.', true); });
+      saveLocalSongs();
+      setStatus('Songs loaded from GitHub.');
+    } catch (error) {
+      console.error(error);
+      const localSongs = readLocalSongs();
+      if (localSongs) {
+        songs = localSongs;
+        writeJSON();
+        renderList();
+        setStatus('Could not load GitHub data. Showing this browser’s saved copy.', true);
+      } else {
+        setStatus('Could not load geethika.json from GitHub. Check the repository and branch.', true);
+      }
     }
-    clearForm();
   }
 
   function exportJSON() {
@@ -191,7 +255,7 @@ const GITHUB_FILE = "songs.json";
     const link = document.createElement('a');
     link.href = url; link.download = 'geethika.json'; link.click();
     URL.revokeObjectURL(url);
-    setStatus('geethika.json ලෙස export කරන ලදී.');
+    setStatus('Exported as geethika.json.');
   }
 
   els.loginForm.addEventListener('submit', event => {
@@ -201,7 +265,7 @@ const GITHUB_FILE = "songs.json";
       els.loginError.textContent = '';
       loginSuccess();
     } else {
-      els.loginError.textContent = 'මුරපදය වැරදියි. නැවත උත්සාහ කරන්න.';
+      els.loginError.textContent = 'Incorrect password. Please try again.';
       els.password.select();
     }
   });
@@ -226,7 +290,7 @@ const GITHUB_FILE = "songs.json";
     songs.sort((a, b) => Number(a.number) - Number(b.number));
     refreshData();
     clearForm();
-    setStatus('Geethika සුරැකුණි. geethika.json යාවත්කාලීන කිරීමට JSON පිටපත් කරන්න.');
+    setStatus('Song saved. GitHub sync will be attempted automatically.');
   });
 
   [els.number, els.title, els.category, els.key, els.lyrics].forEach(node => node.addEventListener('input', updatePreview));
@@ -237,11 +301,11 @@ const GITHUB_FILE = "songs.json";
     writeJSON();
     try {
       await navigator.clipboard.writeText(els.json.value);
-      els.importStatus.textContent = 'JSON clipboard වෙත පිටපත් කරන ලදී.';
+      els.importStatus.textContent = 'JSON copied to clipboard.';
     } catch {
       els.json.focus(); els.json.select();
       const copied = document.execCommand('copy');
-      els.importStatus.textContent = copied ? 'JSON clipboard වෙත පිටපත් කරන ලදී.' : 'පහත JSON අතින් පිටපත් කරන්න.';
+      els.importStatus.textContent = copied ? 'JSON copied to clipboard.' : 'Please copy the JSON below manually.';
     }
   });
 
@@ -253,9 +317,9 @@ const GITHUB_FILE = "songs.json";
       songs = normalizeImported(parsed);
       refreshData();
       clearForm();
-      els.importStatus.textContent = `${songs.length} ගීතිකා import කරන ලදී.`;
+      els.importStatus.textContent = `Imported ${songs.length} songs.`;
     } catch (error) {
-      els.importStatus.textContent = error.message || 'JSON import අසාර්ථකයි.';
+      els.importStatus.textContent = error.message || 'JSON import failed.';
       els.importStatus.style.color = '#ba5148';
     } finally {
       event.target.value = '';
@@ -263,7 +327,7 @@ const GITHUB_FILE = "songs.json";
   });
 
   const keyPlaceholder = document.createElement('option');
-  keyPlaceholder.value = ''; keyPlaceholder.textContent = 'Key තෝරන්න'; keyPlaceholder.disabled = true;
+  keyPlaceholder.value = ''; keyPlaceholder.textContent = 'Select key'; keyPlaceholder.disabled = true;
   els.key.append(keyPlaceholder);
   KEYS.forEach(key => { const option = document.createElement('option'); option.value = key; option.textContent = key; els.key.append(option); });
   els.key.value = 'G';
@@ -274,22 +338,5 @@ const GITHUB_FILE = "songs.json";
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(error => console.warn('Service worker registration failed:', error));
   }
- if (sessionStorage.getItem(AUTH_KEY) === '1') loginSuccess();
-  async function pushToGitHub(songs) {
-    const getFile = await fetch(```https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${GITHUB_FILE}```, {
-      headers: { Authorization: token ${GITHUB_TOKEN} }
-    });
-    const fileData = await getFile.json();
-    await fetch(```https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${GITHUB_FILE}```, {
-      method: "PUT",
-      headers: { Authorization: token ${GITHUB_TOKEN}, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: "update song",
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(songs, null, 2)))),
-        sha: fileData.sha
-      })
-    });
-    alert("GitHub එකට ගියා! ✅");
-  }
+  if (sessionStorage.getItem(AUTH_KEY) === '1') loginSuccess();
 })();
-
