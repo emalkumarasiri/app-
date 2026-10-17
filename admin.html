@@ -24,7 +24,7 @@
         <div class="field"><label for="admin-password">මුරපදය</label><input id="admin-password" type="password" autocomplete="current-password" required placeholder="මුරපදය ඇතුළත් කරන්න"></div>
         <button class="btn btn-primary" type="submit">පිවිසෙන්න <span aria-hidden="true">→</span></button>
         <div class="login-error" id="login-error" role="alert"></div>
-        <div class="security-note">මෙය client-side demo login එකකි. මුරපදය JavaScript හි ඇත; static hosting එකකදී මෙය සැබෑ ආරක්ෂිත login ක්‍රමයක් නොවේ.</div>
+        <div class="security-note"></div>
       </form>
     </section>
 
@@ -37,7 +37,7 @@
           <form id="song-form">
             <input id="original-number" type="hidden">
             <div class="inline-fields"><div class="field"><label for="song-number">Number</label><input id="song-number" type="number" min="1" step="1" required placeholder="1"></div><div class="field"><label for="song-title-input">Title (Sinhala)</label><input id="song-title-input" type="text" required placeholder="ගීතිකාවේ නම" autocomplete="off"></div></div>
-            <div class="inline-fields second-row"><div class="field"><label for="song-category">Category</label><select id="song-category" required><option value="Prashansa">Prashansa</option><option value="Namaskara">Namaskara</option><option value="Deva Meheya">Deva Meheya</option><option value="Christmas">Christmas</option></select></div><div class="field"><label for="song-key">Key</label><select id="song-key" required></select></div></div>
+            <div class="inline-fields second-row"><div class="field"><label for="song-category">Category</label><select id="song-category" required><option value="Namaskara">Namaskara</option><option value="Kurusiya">Kurusiya</option><option value="Christmas">Christmas</option><option value="Other">other</option></select></div><div class="field"><label for="song-key">Key</label><select id="song-key" required></select></div></div>
             <div class="field"><label for="song-lyrics">Lyrics with Chords</label><textarea id="song-lyrics" class="code-input" required spellcheck="false" placeholder="[G]Yesu [C]mama [D]saranai&#10;[G]ඔබගේ ගී පද මෙහි එක් කරන්න"></textarea><span class="field-help">Type like [G]Yesu [C]mama — chord එකක් සඳහා [G], [C], [D] ලෙස ලියන්න. සෑම පේළියක්ම වෙනම තබන්න.</span></div>
             <div class="form-actions"><button class="btn btn-primary" type="submit">Save Geethika</button><button class="btn btn-secondary" id="clear-form" type="button">Clear</button><button class="btn btn-soft" id="export-json" type="button">Export JSON ↓</button></div>
             <div class="admin-status" id="admin-status" role="status"></div>
