@@ -10,7 +10,7 @@
     'All',
     'Prashansa',
     'Namaskara',
-    'Deva Meheya',
+    'Kurusiya',
     'Christmas'
   ];
 
