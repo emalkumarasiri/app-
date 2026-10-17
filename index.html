@@ -1,57 +1,533 @@
 <!doctype html>
-<html lang="en">
+<html lang="si">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#eef7ff">
-  <meta name="description" content="GeethikaLK — Sinhala Christian hymns, chords, favourites and offline access.">
-  <title>GeethikaLK — Sinhala Hymns and Chords</title>
+  <meta name="theme-color" content="#b9e2ff">
+  <meta name="description" content="GeethikaLK — සිංහල ගීතිකා, Chords, ප්‍රියතම ගීතිකා සහ Offline පහසුකම්.">
+  <title>GeethikaLK — සිංහල ගීතිකා</title>
+
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.json">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="./styles.css">
 </head>
+
 <body class="app-page">
+
+  <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="./" aria-label="GeethikaLK home"><span class="brand-cross" aria-hidden="true">✝</span><span>Geethika<span class="brand-lk">LK</span></span></a>
-      <div class="header-actions"><span class="offline-status" id="offline-status"><i></i><span>Online</span></span><a class="admin-link" href="./admin.html">Admin <span aria-hidden="true">↗</span></a></div>
+
+      <button
+        class="menu-toggle"
+        id="menu-toggle"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-controls="app-sidebar"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <a class="brand" href="./" aria-label="GeethikaLK home">
+        <span class="brand-cross" aria-hidden="true">✝</span>
+        <span>Geethika<span class="brand-lk">LK</span></span>
+      </a>
+
+      <div class="header-actions">
+        <span class="offline-status" id="offline-status">
+          <i></i>
+          <span>Online</span>
+        </span>
+
+        <a class="admin-link" href="./admin.html">
+          Admin <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
     </div>
   </header>
 
+  <!-- SIDEBAR OVERLAY -->
+  <div
+    class="sidebar-overlay"
+    id="sidebar-overlay"
+    hidden
+  ></div>
+
+  <!-- SIDEBAR -->
+  <aside
+    class="app-sidebar"
+    id="app-sidebar"
+    aria-label="Main navigation"
+    aria-hidden="true"
+    inert
+  >
+
+    <div class="sidebar-header">
+
+      <a class="sidebar-brand" href="./">
+        <span class="sidebar-brand-icon" aria-hidden="true">✝</span>
+
+        <span>
+          <strong>GeethikaLK</strong>
+          <small>සිංහල ගීතිකා</small>
+        </span>
+      </a>
+
+      <button
+        class="sidebar-close"
+        id="sidebar-close"
+        type="button"
+        aria-label="Close navigation menu"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div class="sidebar-welcome">
+      <span class="sidebar-welcome-icon" aria-hidden="true">🎵</span>
+      <h2>ආයුබෝවන්!</h2>
+      <p>ඔබේ ප්‍රියතම ගීතිකා සොයාගන්න.</p>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="App menu">
+
+      <p class="sidebar-label">LIBRARY</p>
+
+      <button
+        class="sidebar-item active"
+        type="button"
+        data-menu-action="all-hymns"
+      >
+        <span class="sidebar-item-icon" aria-hidden="true">⌂</span>
+        <span>All Hymns</span>
+        <span class="sidebar-item-arrow" aria-hidden="true">›</span>
+      </button>
+
+      <button
+        class="sidebar-item"
+        type="button"
+        data-menu-action="favourites"
+      >
+        <span class="sidebar-item-icon" aria-hidden="true">♡</span>
+        <span>My Favourite Hymns</span>
+        <span class="sidebar-item-arrow" aria-hidden="true">›</span>
+      </button>
+
+      <p class="sidebar-label">PERSONALIZE</p>
+
+      <button
+        class="sidebar-item"
+        type="button"
+        data-menu-action="settings"
+      >
+        <span class="sidebar-item-icon" aria-hidden="true">⚙</span>
+        <span>Settings</span>
+        <span class="sidebar-item-arrow" aria-hidden="true">›</span>
+      </button>
+
+      <button
+        class="sidebar-item"
+        type="button"
+        data-menu-action="about"
+      >
+        <span class="sidebar-item-icon" aria-hidden="true">ⓘ</span>
+        <span>About Us</span>
+        <span class="sidebar-item-arrow" aria-hidden="true">›</span>
+      </button>
+
+      <p class="sidebar-label">GET IN TOUCH</p>
+
+      <a
+        class="sidebar-item"
+        href="mailto:emalkumarasiri2006@gmail.com"
+      >
+        <span class="sidebar-item-icon" aria-hidden="true">✉</span>
+        <span>Email Us</span>
+        <span class="sidebar-item-arrow" aria-hidden="true">↗</span>
+      </a>
+
+      <a
+        class="sidebar-item"
+        href="https://wa.me/94781017643"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="sidebar-item-icon" aria-hidden="true">☏</span>
+        <span>Contact Us</span>
+        <span class="sidebar-item-arrow" aria-hidden="true">↗</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="sidebar-footer-cross" aria-hidden="true">✝</span>
+      <p>GeethikaLK</p>
+      <small>සිංහල ගීතිකා</small>
+      <small class="sidebar-version">Made with care by Emal kumarasiri</small>
+    </div>
+
+  </aside>
+
+  <!-- SETTINGS DIALOG -->
+  <dialog class="app-dialog" id="settings-dialog">
+
+    <div class="dialog-header">
+      <div>
+        <span class="dialog-eyebrow">PERSONALIZE</span>
+        <h2 id="settings-title">⚙️ Settings</h2>
+      </div>
+
+      <button
+        class="dialog-close"
+        type="button"
+        data-close-dialog
+        aria-label="Close settings"
+      >✕</button>
+    </div>
+
+    <div class="dialog-content">
+
+      <div class="settings-option">
+        <div class="settings-option-text">
+          <strong>Dark Mode</strong>
+          <p>අඳුරු පෙනුම භාවිතා කරන්න.</p>
+        </div>
+
+        <label class="switch-control">
+          <input type="checkbox" id="dark-mode-toggle">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-option">
+        <div class="settings-option-text">
+          <strong>Lyrics Font Size</strong>
+          <p>ගීතිකාවල අකුරු ප්‍රමාණය වෙනස් කරන්න.</p>
+        </div>
+
+        <div class="font-size-controls">
+          <button
+            type="button"
+            id="settings-font-down"
+            aria-label="Decrease lyrics font size"
+          >A−</button>
+
+          <button
+            type="button"
+            id="settings-font-up"
+            aria-label="Increase lyrics font size"
+          >A+</button>
+        </div>
+      </div>
+
+      <p class="settings-note">
+        ඔබට පහසු ආකාරයට යෙදුම සකස් කරගන්න.
+      </p>
+
+    </div>
+
+    <div class="dialog-actions">
+      <button class="dialog-primary" type="button" data-close-dialog>
+        Done
+      </button>
+    </div>
+
+  </dialog>
+
+  <!-- ABOUT DIALOG -->
+  <dialog class="app-dialog about-dialog" id="about-dialog">
+
+    <div class="dialog-header">
+      <div>
+        <span class="dialog-eyebrow">ABOUT THE APP</span>
+        <h2 id="about-title">About GeethikaLK</h2>
+      </div>
+
+      <button
+        class="dialog-close"
+        type="button"
+        data-close-dialog
+        aria-label="Close about"
+      >✕</button>
+    </div>
+
+    <div class="about-content">
+
+      <div class="about-app-icon" aria-hidden="true">✝</div>
+
+      <h3>GeethikaLK</h3>
+      <p class="about-sinhala-title">සිංහල ගීතිකා</p>
+
+      <p class="about-description">
+        සිංහල ගීතිකා පහසුවෙන් සොයාගැනීමට, කියවීමට සහ
+        ප්‍රියතම ගීතිකා සුරැකීමට නිර්මාණය කළ යෙදුමකි.
+      </p>
+
+      <div class="about-divider"></div>
+
+      <div class="about-detail">
+        <span>Developer</span>
+        <strong>Emal kumarasiri</strong>
+      </div>
+
+      <div class="about-detail">
+        <span>Email</span>
+        <a href="mailto:emalkumarasiri2006@gmail.com">
+          emalkumarasiri2006@gmail.com
+        </a>
+      </div>
+
+      <div class="about-detail">
+        <span>App</span>
+        <strong>GeethikaLK</strong>
+      </div>
+
+    </div>
+
+    <div class="dialog-actions">
+      <button class="dialog-primary" type="button" data-close-dialog>
+        Close
+      </button>
+    </div>
+
+  </dialog>
+
+  <!-- MAIN CONTENT -->
   <main class="app-shell">
-    <section class="home-view" id="home-view" aria-labelledby="home-title">
+
+    <!-- HOME VIEW -->
+    <section
+      class="home-view"
+      id="home-view"
+      aria-labelledby="home-title"
+    >
+
       <div class="hero-banner">
-        <div class="hero-copy"><p class="eyebrow"><span class="eyebrow-cross" aria-hidden="true">✝</span> Sinhala Christian Hymn Collection</p><h1 id="home-title">Choose a Hymn<span class="hero-dot">.</span></h1><p class="hero-subtitle">Lyrics, Chords, and Music — All in One Place.</p></div>
-        <div class="hero-emblem" aria-hidden="true"><span class="emblem-ring ring-one"></span><span class="emblem-ring ring-two"></span><span class="emblem-cross">✝</span><span class="emblem-rays">✦</span></div>
+
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="eyebrow-cross" aria-hidden="true">✝</span>
+            සිංහල ගීතිකා
+          </p>
+
+          <h1 id="home-title">
+            Choose a Hymn<span class="hero-dot">.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Lyrics, Chords, and Music — All in One Place.
+          </p>
+        </div>
+
+        <div class="hero-emblem" aria-hidden="true">
+          <span class="emblem-ring ring-one"></span>
+          <span class="emblem-ring ring-two"></span>
+          <span class="emblem-cross">✝</span>
+          <span class="emblem-rays">✦</span>
+        </div>
+
       </div>
+
       <div class="catalog-section">
-        <div class="catalog-top"><div><p class="section-kicker">GEETHIKALK / LIBRARY</p><h2>Hymn Collection</h2></div><span class="song-count" id="song-count">0 Hymns</span></div>
-        <label class="search-wrap" for="song-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="song-search" type="search" placeholder="Search for a hymn…" autocomplete="off"><kbd>⌘ K</kbd></label>
-        <div class="category-bar" id="category-bar" role="group" aria-label="Hymn Category"></div>
-        <div class="song-grid" id="song-grid" aria-live="polite"></div>
-        <div class="empty-state" id="empty-state" hidden><span aria-hidden="true">✝</span><h3>No Hymns Found</h3><p>Try searching again with a different word or category.</p></div>
+
+        <div class="catalog-top">
+          <div>
+            <p class="section-kicker">GEETHIKALK / LIBRARY</p>
+            <h2 id="catalog-title">Hymn Collection</h2>
+          </div>
+
+          <span class="song-count" id="song-count">0 Hymns</span>
+        </div>
+
+        <label class="search-wrap" for="song-search">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+
+          <input
+            id="song-search"
+            type="search"
+            placeholder="Search for a hymn…"
+            autocomplete="off"
+          >
+
+          <kbd>⌘ K</kbd>
+        </label>
+
+        <div
+          class="category-bar"
+          id="category-bar"
+          role="group"
+          aria-label="Hymn Category"
+        ></div>
+
+        <div
+          class="song-grid"
+          id="song-grid"
+          aria-live="polite"
+        ></div>
+
+        <div class="empty-state" id="empty-state" hidden>
+          <span aria-hidden="true">✝</span>
+          <h3>No Hymns Found</h3>
+          <p>Try searching again with a different word or category.</p>
+        </div>
+
       </div>
+
     </section>
 
-    <section class="song-view" id="song-view" aria-labelledby="song-title" hidden>
-      <button class="back-button" id="back-button" type="button"><span aria-hidden="true">←</span> Hymn Collection</button>
-      <div class="song-heading"><div><div class="song-meta-line"><span class="song-number" id="view-number"></span><span class="meta-separator">/</span><span class="song-category" id="view-category"></span></div><h1 id="song-title"></h1><p class="original-key" id="original-key"></p></div><span class="song-cross" aria-hidden="true">✝</span></div>
-      <div class="song-toolbar" role="toolbar" aria-label="Hymn Controls">
-        <div class="tool-group transpose-group"><span class="tool-caption">Key</span><button class="tool-button" id="transpose-down" type="button" aria-label="Key අඩු කරන්න">−</button><span class="current-key" id="current-key">Key: G</span><button class="tool-button" id="transpose-up" type="button" aria-label="Key වැඩි කරන්න">+</button></div>
-        <div class="tool-group font-group"><span class="tool-caption">Font Size</span><button class="tool-button" id="font-down" type="button" aria-label="Font Size කුඩා කරන්න">A−</button><button class="tool-button" id="font-up" type="button" aria-label="Font Size විශාල කරන්න">A+</button></div>
-        <button class="tool-button scroll-button" id="autoscroll-button" type="button" aria-pressed="false"><span aria-hidden="true">▶</span><span>AutoScroll</span></button>
-        <button class="tool-button favourite-button" id="favourite-button" type="button" aria-pressed="false" aria-label="Mark as Favourite"><span aria-hidden="true">☆</span><span class="favourite-label">Favourite</span></button>
+    <!-- INDIVIDUAL SONG VIEW -->
+    <section
+      class="song-view"
+      id="song-view"
+      aria-labelledby="song-title"
+      hidden
+    >
+
+      <button class="back-button" id="back-button" type="button">
+        <span aria-hidden="true">←</span>
+        Hymn Collection
+      </button>
+
+      <div class="song-heading">
+
+        <div>
+          <div class="song-meta-line">
+            <span class="song-number" id="view-number"></span>
+            <span class="meta-separator">/</span>
+            <span class="song-category" id="view-category"></span>
+          </div>
+
+          <h1 id="song-title"></h1>
+          <p class="original-key" id="original-key"></p>
+        </div>
+
+        <span class="song-cross" aria-hidden="true">✝</span>
+
       </div>
-      <div class="sample-notice" id="sample-notice" hidden><span aria-hidden="true">ⓘ</span> This is sample text showing the chord format. Update the lyrics you are authorized to use through the Admin panel.</div>
-      <article class="lyrics-card"><div class="lyrics-topline"><span>Lyrics and Chords</span><span class="lyrics-hint">Chords are shown in orange</span></div><div class="lyrics-content" id="lyrics-content" aria-live="polite"></div></article>
-      <div class="song-bottom-note"><span class="note-cross" aria-hidden="true">✝</span><span>Let Us Worship Through Music</span><span class="note-rule"></span></div>
+
+      <div class="song-toolbar" role="toolbar" aria-label="Hymn Controls">
+
+        <div class="tool-group transpose-group">
+          <span class="tool-caption">Key</span>
+
+          <button
+            class="tool-button"
+            id="transpose-down"
+            type="button"
+            aria-label="Key අඩු කරන්න"
+          >−</button>
+
+          <span class="current-key" id="current-key">Key: G</span>
+
+          <button
+            class="tool-button"
+            id="transpose-up"
+            type="button"
+            aria-label="Key වැඩි කරන්න"
+          >+</button>
+        </div>
+
+        <div class="tool-group font-group">
+          <span class="tool-caption">Font Size</span>
+
+          <button
+            class="tool-button"
+            id="font-down"
+            type="button"
+            aria-label="Font Size කුඩා කරන්න"
+          >A−</button>
+
+          <button
+            class="tool-button"
+            id="font-up"
+            type="button"
+            aria-label="Font Size විශාල කරන්න"
+          >A+</button>
+        </div>
+
+        <button
+          class="tool-button scroll-button"
+          id="autoscroll-button"
+          type="button"
+          aria-pressed="false"
+        >
+          <span aria-hidden="true">▶</span>
+          <span>AutoScroll</span>
+        </button>
+
+        <button
+          class="tool-button favourite-button"
+          id="favourite-button"
+          type="button"
+          aria-pressed="false"
+          aria-label="Mark as Favourite"
+        >
+          <span aria-hidden="true">☆</span>
+          <span class="favourite-label">Favourite</span>
+        </button>
+
+      </div>
+
+      <div class="sample-notice" id="sample-notice" hidden>
+        <span aria-hidden="true">ⓘ</span>
+        This is sample text showing the chord format. Update the lyrics
+        you are authorized to use through the Admin panel.
+      </div>
+
+      <article class="lyrics-card">
+
+        <div class="lyrics-topline">
+          <span>Lyrics and Chords</span>
+          <span class="lyrics-hint">Chords are shown in orange</span>
+        </div>
+
+        <div
+          class="lyrics-content"
+          id="lyrics-content"
+          aria-live="polite"
+        ></div>
+
+      </article>
+
+      <div class="song-bottom-note">
+        <span class="note-cross" aria-hidden="true">✝</span>
+        <span>Let Us Worship Through Music</span>
+        <span class="note-rule"></span>
+      </div>
+
     </section>
+
   </main>
 
-  <footer class="site-footer"><div class="footer-inner"><span class="footer-mark"><span aria-hidden="true">✝</span> GeethikaLK</span><span>Sinhala Christian Hymns and Chords</span><a href="./admin.html">Manage Hymns</a></div></footer>
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+      <span class="footer-mark">
+        <span aria-hidden="true">✝</span>
+        GeethikaLK
+      </span>
+
+      <span>සිංහල ගීතිකා</span>
+
+      <a href="./admin.html">Manage Hymns</a>
+
+    </div>
+
+  </footer>
+
   <script src="./app.js" defer></script>
+
 </body>
 </html>
