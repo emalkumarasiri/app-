@@ -11,7 +11,7 @@
   const GITHUB_REPO = 'app-';
   const GITHUB_BRANCH = 'main';
   const GITHUB_FILE = 'geethika.json';
-  const GITHUB_TOKEN = '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';
+  const GITHUB_TOKEN = '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';
   const CATEGORIES = ['Prashansa', 'Namaskara', 'Deva Meheya', 'Christmas'];
   const KEYS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm'];
   const CHORD_PATTERN = /\[([A-G](?:#|b)?(?:(?:maj|m|sus|add)\d*|dim|aug|\d*)?)\]/g;
