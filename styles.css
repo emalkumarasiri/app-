@@ -98,7 +98,7 @@ button { color: inherit; }
 
 .site-footer { border-top: 1px solid #e2edf5; background: white; }.footer-inner { display: flex; width: min(1050px,calc(100% - 40px)); min-height: 60px; align-items: center; justify-content: space-between; gap: 15px; margin: auto; color: #7b91a2; font-size: 10px; }.footer-mark { color: var(--blue-deep); font-family: var(--sans); font-size: 11px; font-weight: 700; }.footer-mark span { margin-right: 4px; }.footer-inner > a { color: #6488a2; }
 
-/* Admin panel /*
+/* Admin panel */
 .admin-page { min-height: 100vh; background: #f4f8fc; }
 .admin-shell { width: min(1240px,calc(100% - 40px)); margin: 26px auto 60px; }
 .admin-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 20px; }.admin-top h1 { margin: 8px 0 2px; font-size: 25px; line-height: 1.45; }.admin-top p { margin: 0; color: var(--muted); font-size: 12px; }.admin-top .admin-link { background: white; }
