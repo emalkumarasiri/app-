@@ -3,13 +3,35 @@
 
   const DATA_KEY = 'geethikaLK.songs.v1';
   const FAVOURITES_KEY = 'geethikaLK.favourites.v1';
-  const CATEGORIES = ['All', 'Prashansa', 'Namaskara', 'Deva Meheya', 'Christmas'];
+  const DARK_MODE_KEY = 'geethikaLK.darkMode.v1';
+  const FONT_SIZE_KEY = 'geethikaLK.lyricsFontSize.v1';
 
-  const CHORD_PATTERN = /\[([A-G](?:#|b)?(?:(?:maj|min|m|sus|add|dim|aug|mMaj|maj|min)?\d*(?:sus\d*)?)(?:\/[A-G](?:#|b)?)?)\]/g;
-  const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const CATEGORIES = [
+    'All',
+    'Prashansa',
+    'Namaskara',
+    'Deva Meheya',
+    'Christmas'
+  ];
+
+  const CHORD_PATTERN =
+    /\[([A-G](?:#|b)?(?:(?:maj|min|m|sus|add|dim|aug|mMaj|maj|min)?\d*(?:sus\d*)?)(?:\/[A-G](?:#|b)?)?)\]/g;
+
+  const NOTES = [
+    'C', 'C#', 'D', 'D#', 'E', 'F',
+    'F#', 'G', 'G#', 'A', 'A#', 'B'
+  ];
+
   const FLAT_TO_SHARP = {
-    'Cb': 'B', 'Db': 'C#', 'Eb': 'D#', 'Fb': 'E',
-    'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#', 'E#': 'F', 'B#': 'C'
+    'Cb': 'B',
+    'Db': 'C#',
+    'Eb': 'D#',
+    'Fb': 'E',
+    'Gb': 'F#',
+    'Ab': 'G#',
+    'Bb': 'A#',
+    'E#': 'F',
+    'B#': 'C'
   };
 
   const els = {
@@ -34,16 +56,33 @@
     fontUp: document.querySelector('#font-up'),
     scroll: document.querySelector('#autoscroll-button'),
     favourite: document.querySelector('#favourite-button'),
-    status: document.querySelector('#offline-status')
+    status: document.querySelector('#offline-status'),
+
+    menuToggle: document.querySelector('#menu-toggle'),
+    sidebar: document.querySelector('#app-sidebar'),
+    sidebarOverlay: document.querySelector('#sidebar-overlay'),
+    sidebarClose: document.querySelector('#sidebar-close'),
+
+    settingsDialog: document.querySelector('#settings-dialog'),
+    aboutDialog: document.querySelector('#about-dialog'),
+    darkModeToggle: document.querySelector('#dark-mode-toggle'),
+    settingsFontDown: document.querySelector('#settings-font-down'),
+    settingsFontUp: document.querySelector('#settings-font-up'),
+
+    catalogTitle: document.querySelector('#catalog-title')
   };
 
   let songs = [];
   let activeCategory = 'All';
   let currentSong = null;
   let transposeSteps = 0;
-  let lyricFontSize = 23;
+  let lyricFontSize = readFontSize();
   let autoScrollTimer = null;
-  let favourites = new Set();
+  let favourites = new Set(
+    (safeReadJSON(FAVOURITES_KEY, []) || []).map(String)
+  );
+
+  let favouritesOnly = false;
 
   function safeReadJSON(key, fallback) {
     try {
@@ -54,6 +93,28 @@
     }
   }
 
+  function readFontSize() {
+    try {
+      const value = Number(localStorage.getItem(FONT_SIZE_KEY));
+
+      if (Number.isFinite(value) && value >= 17 && value <= 39) {
+        return value;
+      }
+    } catch {
+      // Use the default size if storage is unavailable.
+    }
+
+    return 23;
+  }
+
+  function savePreference(key, value) {
+    try {
+      localStorage.setItem(key, String(value));
+    } catch {
+      // The app can still work without saving preferences.
+    }
+  }
+
   function canonicalRoot(letter, accidental) {
     const root = `${letter}${accidental || ''}`;
     return FLAT_TO_SHARP[root] || root;
@@ -61,6 +122,7 @@
 
   function shiftNote(note, semitones) {
     const match = /^([A-G])([#b]?)$/.exec(note);
+
     if (!match) return note;
 
     const root = canonicalRoot(match[1], match[2]);
@@ -73,6 +135,7 @@
 
   function shiftChord(chord, semitones) {
     const match = /^([A-G])([#b]?)(.*)$/.exec(chord);
+
     if (!match) return chord;
 
     const root = canonicalRoot(match[1], match[2]);
@@ -82,7 +145,6 @@
 
     let suffix = match[3];
 
-    // Transpose the bass note in slash chords such as G/B.
     const slashMatch = /^(.*)\/([A-G])([#b]?)$/.exec(suffix);
 
     if (slashMatch) {
@@ -96,7 +158,9 @@
   }
 
   function shiftKey(key, semitones) {
-    const match = /^([A-G])([#b]?)(m?)$/.exec(String(key || '').trim());
+    const match = /^([A-G])([#b]?)(m?)$/.exec(
+      String(key || '').trim()
+    );
 
     if (!match) return key || '—';
 
@@ -128,6 +192,7 @@
 
     matches.forEach((match, index) => {
       const contentStart = match.index + match[0].length;
+
       const contentEnd =
         index + 1 < matches.length
           ? matches[index + 1].index
@@ -164,21 +229,120 @@
     });
   }
 
+  // SIDEBAR
+
+  function openSidebar() {
+    if (!els.sidebar) return;
+
+    els.sidebar.classList.add('is-open');
+    els.sidebarOverlay.hidden = false;
+
+    els.sidebar.setAttribute('aria-hidden', 'false');
+    els.sidebar.inert = false;
+
+    els.menuToggle?.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('sidebar-open');
+  }
+
+  function closeSidebar() {
+    if (!els.sidebar) return;
+
+    els.sidebar.classList.remove('is-open');
+    els.sidebarOverlay.hidden = true;
+
+    els.sidebar.setAttribute('aria-hidden', 'true');
+    els.sidebar.inert = true;
+
+    els.menuToggle?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('sidebar-open');
+  }
+
+  function setActiveMenu(action) {
+    document.querySelectorAll('[data-menu-action]').forEach(button => {
+      button.classList.toggle(
+        'active',
+        button.dataset.menuAction === action
+      );
+    });
+  }
+
+  function openDialog(dialog) {
+    if (!dialog) return;
+
+    closeSidebar();
+
+    if (typeof dialog.showModal === 'function') {
+      if (!dialog.open) dialog.showModal();
+    } else {
+      dialog.setAttribute('open', '');
+    }
+  }
+
+  function closeDialog(dialog) {
+    if (!dialog) return;
+
+    if (typeof dialog.close === 'function' && dialog.open) {
+      dialog.close();
+    } else {
+      dialog.removeAttribute('open');
+    }
+  }
+
+  function closeAllDialogs() {
+    closeDialog(els.settingsDialog);
+    closeDialog(els.aboutDialog);
+  }
+
+  // DARK MODE
+
+  function applyDarkMode(enabled) {
+    document.body.classList.toggle('dark-mode', enabled);
+
+    if (els.darkModeToggle) {
+      els.darkModeToggle.checked = enabled;
+    }
+
+    savePreference(DARK_MODE_KEY, enabled ? 'true' : 'false');
+  }
+
+  function initializeDarkMode() {
+    let enabled = false;
+
+    try {
+      enabled = localStorage.getItem(DARK_MODE_KEY) === 'true';
+    } catch {
+      // Default to light mode.
+    }
+
+    applyDarkMode(enabled);
+  }
+
+  // CATEGORY BUTTONS
+
   function makeCategoryButtons() {
+    if (!els.categories) return;
+
     els.categories.replaceChildren();
 
     CATEGORIES.forEach(category => {
       const button = document.createElement('button');
+
       button.type = 'button';
       button.className = 'category-button';
       button.textContent = category;
+
       button.setAttribute(
         'aria-pressed',
-        String(category === activeCategory)
+        String(category === activeCategory && !favouritesOnly)
       );
 
       button.addEventListener('click', () => {
         activeCategory = category;
+        favouritesOnly = false;
+
+        setActiveMenu('all-hymns');
+        updateCatalogTitle();
+
         makeCategoryButtons();
         renderSongGrid();
       });
@@ -195,24 +359,59 @@
         activeCategory === 'All' ||
         song.category === activeCategory;
 
+      const favouriteMatch =
+        !favouritesOnly ||
+        favourites.has(String(song.number));
+
       const searchable =
         `${song.title} ${song.category} ${song.number} ${song.key}`
           .toLocaleLowerCase();
 
-      return categoryMatch &&
-        (!query || searchable.includes(query));
+      const searchMatch =
+        !query || searchable.includes(query);
+
+      return categoryMatch && favouriteMatch && searchMatch;
     });
   }
 
+  function updateCatalogTitle() {
+    if (!els.catalogTitle) return;
+
+    els.catalogTitle.textContent = favouritesOnly
+      ? 'My Favourite Hymns'
+      : 'Hymn Collection';
+  }
+
   function renderSongGrid() {
+    if (!els.grid || !els.count || !els.empty) return;
+
     const visible = filteredSongs();
 
     els.grid.replaceChildren();
+
     els.count.textContent = `ගීතිකා ${visible.length}`;
     els.empty.hidden = visible.length > 0;
 
+    if (!visible.length) {
+      const heading = els.empty.querySelector('h3');
+      const description = els.empty.querySelector('p');
+
+      if (heading && description) {
+        if (favouritesOnly) {
+          heading.textContent = 'ප්‍රියතම ගීතිකා නැත';
+          description.textContent =
+            'ඔබ කැමති ගීතිකාවක් විවෘත කර Favourite බොත්තම ඔබන්න.';
+        } else {
+          heading.textContent = 'ගීතිකා හමු නොවීය';
+          description.textContent =
+            'වෙනත් වචනයක් හෝ Category එකක් භාවිතා කර සොයන්න.';
+        }
+      }
+    }
+
     visible.forEach(song => {
       const card = document.createElement('button');
+
       card.type = 'button';
       card.className = 'song-card';
 
@@ -269,12 +468,18 @@
 
   function showHome() {
     stopAutoScroll();
+
     currentSong = null;
+
     els.home.hidden = false;
     els.detail.hidden = true;
 
     renderSongGrid();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
 
   function showSong(number) {
@@ -291,28 +496,30 @@
 
     currentSong = song;
     transposeSteps = 0;
-    lyricFontSize = 23;
 
     els.home.hidden = true;
     els.detail.hidden = false;
+
     els.number.textContent = `NO. ${song.number}`;
     els.category.textContent = song.category;
     els.title.textContent = song.title;
     els.originalKey.textContent = `Original key: ${song.key}`;
+
     els.sampleNotice.hidden = !song.demoLyrics;
 
     updateSongControls();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
 
   function updateSongControls() {
     if (!currentSong) return;
 
-    // IMPORTANT: one click = one semitone.
-    const semitones = transposeSteps;
-
     els.currentKey.textContent =
-      `Key: ${shiftKey(currentSong.key, semitones)}`;
+      `Key: ${shiftKey(currentSong.key, transposeSteps)}`;
 
     els.lyrics.style.setProperty(
       '--lyrics-font-size',
@@ -322,7 +529,7 @@
     renderLyrics(
       els.lyrics,
       currentSong.lyrics,
-      semitones
+      transposeSteps
     );
 
     const isFavourite =
@@ -346,6 +553,13 @@
     if (icon) {
       icon.textContent = isFavourite ? '★' : '☆';
     }
+  }
+
+  function saveFavourites() {
+    savePreference(
+      FAVOURITES_KEY,
+      JSON.stringify([...favourites])
+    );
   }
 
   function stopAutoScroll() {
@@ -402,11 +616,17 @@
   }
 
   function updateNetworkStatus() {
+    if (!els.status) return;
+
     const offline = !navigator.onLine;
 
     els.status.classList.toggle('is-offline', offline);
-    els.status.querySelector('span').textContent =
-      offline ? 'Offline' : 'Online';
+
+    const label = els.status.querySelector('span');
+
+    if (label) {
+      label.textContent = offline ? 'Offline' : 'Online';
+    }
   }
 
   function registerPWA() {
@@ -416,12 +636,12 @@
     ) {
       navigator.serviceWorker
         .register('./sw.js', { scope: './' })
-        .catch(error =>
+        .catch(error => {
           console.warn(
             'Service worker registration failed:',
             error
-          )
-        );
+          );
+        });
     }
 
     window.addEventListener('online', updateNetworkStatus);
@@ -430,7 +650,116 @@
     updateNetworkStatus();
   }
 
+  // SIDEBAR MENU ACTIONS
+
+  document.querySelectorAll('[data-menu-action]').forEach(button => {
+    button.addEventListener('click', () => {
+      const action = button.dataset.menuAction;
+
+      if (action === 'settings') {
+        openDialog(els.settingsDialog);
+        return;
+      }
+
+      if (action === 'about') {
+        openDialog(els.aboutDialog);
+        return;
+      }
+
+      if (action === 'favourites') {
+        favouritesOnly = true;
+        activeCategory = 'All';
+
+        els.search.value = '';
+
+        makeCategoryButtons();
+        updateCatalogTitle();
+        setActiveMenu('favourites');
+      }
+
+      if (action === 'all-hymns') {
+        favouritesOnly = false;
+        activeCategory = 'All';
+
+        els.search.value = '';
+
+        makeCategoryButtons();
+        updateCatalogTitle();
+        setActiveMenu('all-hymns');
+      }
+
+      history.pushState(
+        {},
+        '',
+        `${location.pathname}${location.search}`
+      );
+
+      closeSidebar();
+      showHome();
+    });
+  });
+
+  // SIDEBAR OPEN / CLOSE
+
+  els.menuToggle?.addEventListener('click', openSidebar);
+  els.sidebarClose?.addEventListener('click', closeSidebar);
+  els.sidebarOverlay?.addEventListener('click', closeSidebar);
+
+  // DIALOG BUTTONS
+
+  document.querySelectorAll('[data-close-dialog]').forEach(button => {
+    button.addEventListener('click', () => {
+      closeAllDialogs();
+    });
+  });
+
+  [els.settingsDialog, els.aboutDialog].forEach(dialog => {
+    dialog?.addEventListener('click', event => {
+      if (event.target === dialog) {
+        closeDialog(dialog);
+      }
+    });
+  });
+
+  // SETTINGS: DARK MODE
+
+  els.darkModeToggle?.addEventListener('change', () => {
+    applyDarkMode(els.darkModeToggle.checked);
+  });
+
+  // SETTINGS: FONT SIZE
+
+  function changeFontSize(amount) {
+    lyricFontSize = Math.max(
+      17,
+      Math.min(39, lyricFontSize + amount)
+    );
+
+    savePreference(FONT_SIZE_KEY, lyricFontSize);
+
+    if (currentSong) {
+      updateSongControls();
+    } else {
+      els.lyrics?.style.setProperty(
+        '--lyrics-font-size',
+        `${lyricFontSize}px`
+      );
+    }
+  }
+
+  els.settingsFontDown?.addEventListener('click', () => {
+    changeFontSize(-2);
+  });
+
+  els.settingsFontUp?.addEventListener('click', () => {
+    changeFontSize(2);
+  });
+
+  // SEARCH
+
   els.search.addEventListener('input', renderSongGrid);
+
+  // BACK BUTTON
 
   els.back.addEventListener('click', () => {
     history.pushState(
@@ -444,6 +773,8 @@
 
   window.addEventListener('hashchange', routeFromHash);
 
+  // KEYBOARD SHORTCUTS
+
   window.addEventListener('keydown', event => {
     if (
       (event.metaKey || event.ctrlKey) &&
@@ -455,9 +786,14 @@
         els.search.focus();
       }
     }
+
+    if (event.key === 'Escape') {
+      closeSidebar();
+    }
   });
 
-  // Transpose down: one semitone per click, down to -12.
+  // TRANSPOSE
+
   els.transposeDown.addEventListener('click', () => {
     if (!currentSong) return;
 
@@ -465,7 +801,6 @@
     updateSongControls();
   });
 
-  // Transpose up: one semitone per click, up to +12.
   els.transposeUp.addEventListener('click', () => {
     if (!currentSong) return;
 
@@ -473,19 +808,17 @@
     updateSongControls();
   });
 
-  els.fontDown.addEventListener('click', () => {
-    if (!currentSong) return;
+  // SONG FONT SIZE
 
-    lyricFontSize = Math.max(17, lyricFontSize - 2);
-    updateSongControls();
+  els.fontDown.addEventListener('click', () => {
+    changeFontSize(-2);
   });
 
   els.fontUp.addEventListener('click', () => {
-    if (!currentSong) return;
-
-    lyricFontSize = Math.min(39, lyricFontSize + 2);
-    updateSongControls();
+    changeFontSize(2);
   });
+
+  // FAVOURITES
 
   els.favourite.addEventListener('click', () => {
     if (!currentSong) return;
@@ -498,17 +831,15 @@
       favourites.add(id);
     }
 
-    try {
-      localStorage.setItem(
-        FAVOURITES_KEY,
-        JSON.stringify([...favourites])
-      );
-    } catch {
-      // Optional preference.
-    }
-
+    saveFavourites();
     updateSongControls();
+
+    if (favouritesOnly) {
+      renderSongGrid();
+    }
   });
+
+  // AUTOSCROLL
 
   els.scroll.addEventListener('click', () => {
     if (autoScrollTimer) {
@@ -538,15 +869,22 @@
     }, 35);
   });
 
-  favourites = new Set(
-    (safeReadJSON(FAVOURITES_KEY, []) || []).map(String)
-  );
+  // INITIALIZE
+
+  initializeDarkMode();
 
   makeCategoryButtons();
+  updateCatalogTitle();
+
+  els.lyrics?.style.setProperty(
+    '--lyrics-font-size',
+    `${lyricFontSize}px`
+  );
 
   loadSongs()
     .then(data => {
       songs = data;
+
       renderSongGrid();
       routeFromHash();
       registerPWA();
@@ -560,7 +898,7 @@
         'ගීතිකා පූරණය කළ නොහැක';
 
       els.empty.querySelector('p').textContent =
-        'geethika.json ගොනුව සමඟ app එක local server එකකින් විවෘත කරන්න.';
+        'geethika.json ගොනුව පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
 
       registerPWA();
     });
