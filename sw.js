@@ -4,7 +4,7 @@ const APP_FILES = [
   './',
   './index.html',
   './admin.html',
-  './style.css',
+  './styles.css',
   './app.js',
   './admin.js',
   './geethika.json',
@@ -52,7 +52,6 @@ self.addEventListener('fetch', event => {
 
   if (url.origin !== self.location.origin) return;
 
-  // Always check the latest HTML from the server first.
   if (request.mode === 'navigate') {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
@@ -87,12 +86,12 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Always fetch the latest JavaScript and CSS when online.
-  if (
+  const isAppFile =
     url.pathname.endsWith('/app.js') ||
     url.pathname.endsWith('/admin.js') ||
-    url.pathname.endsWith('/style.css')
-  ) {
+    url.pathname.endsWith('/styles.css');
+
+  if (isAppFile) {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
 
@@ -116,7 +115,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Keep the song data available offline.
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
 
