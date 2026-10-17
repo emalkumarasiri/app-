@@ -9,34 +9,10 @@
   },
   {
     "number": 2,
-    "title": "Mage Durwala Than Pawithru Kala Manawi",
+    "title": "Mage durwala then",
     "category": "Prashansa",
     "key": "C",
     "lyrics": "[C]මගේ දුර්වල තැන් පවිත්‍ර කළ මැන[G]වි [C]\n[F]මගේ හදවත දැන් පවිත්‍ර කළ මැන[G]වි [C]\n[F]මගේ මනසේ කිළිටි තැන්\n[F]ඔබ අකමැති සිතුවිලි දැන් [C]\n[F]ඔබේ ලෙයින් [G]සේදුව මැනවි..//\n\n[F]මා බලන නෙත් ඔබ\n[G]ලෙයින් පවිත්‍ර කරන්න [C]\n[F]ඔබ වෙත ඔසවන මා\n[G]දැත් පවිත්‍ර කරන්න [C]\n[Am]මා දෙසවන් ඉඩදුන්\n[Em]හදවත පවිත්‍ර කරන්න [F],\n[C]පවිත්‍ර සිතකින් යේසුනි ඔබ නමදින්[G]න [C]\n[F]පවිත්‍ර සිතකින් යේසුනි ඔබ නමදින්[G]න [C]",
-    "demoLyrics": true
-  },
-  {
-    "number": 3,
-    "title": "Deva Meheya Karana",
-    "category": "Deva Meheya",
-    "key": "D",
-    "lyrics": "[D]මෙය නියැදි පද [G]සහිත ගීතිකාවකි\n[A]ඔබේ ගී පද [D]පරිපාලකෙන් එක් කරන්න",
-    "demoLyrics": true
-  },
-  {
-    "number": 4,
-    "title": "Api Midu Sathata",
-    "category": "Christmas",
-    "key": "A",
-    "lyrics": "[A]නියැදි ගී පද [D]මෙහි ඇත\n[E]අවසර ඇති පද [A]එකතු කරන්න",
-    "demoLyrics": true
-  },
-  {
-    "number": 5,
-    "title": "Etha Golgothawe",
-    "category": "Namaskara",
-    "key": "Em",
-    "lyrics": "[Em]මෙය chord පෙන්වන [C]නියැදි පෙළකි\n[B7]ඔබගේ ගී පද [Em]මෙහි යාවත්කාලීන කරන්න",
-    "demoLyrics": true
+    "demoLyrics": false
   }
 ]
