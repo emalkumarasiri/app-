@@ -8,10 +8,10 @@
 
   const CATEGORIES = [
     'All',
-    'Sthuthidima',
     'Namaskara',
     'Kurasiya',
-    'Christmas'
+    'Christmas',
+    'Other'
   ];
 
   const CHORD_PATTERN =
