@@ -8,9 +8,9 @@
 
   const CATEGORIES = [
     'All',
-    'Prashansa',
+    'Sthuthidima',
     'Namaskara',
-    'Deva Meheya',
+    'Kurasiya',
     'Christmas'
   ];
 
