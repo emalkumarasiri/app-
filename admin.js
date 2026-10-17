@@ -4,7 +4,7 @@
   const ADMIN_PASSWORD = 'geethika2026';
   const DATA_KEY = 'geethikaLK.songs.v1';
   const AUTH_KEY = 'geethikaLK.adminSession';
-  const CATEGORIES = ['Prashansa', 'Namaskara', 'Deva Meheya', 'Christmas'];
+  const CATEGORIES = ['Other', 'Namaskara', 'Kurusiya', 'Christmas'];
   const KEYS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm'];
   const CHORD_PATTERN = /\[([A-G](?:#|b)?(?:(?:maj|m|sus|add)\d*|dim|aug|\d*)?)\]/g;
 
