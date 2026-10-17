@@ -1,27 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="si">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#b9e2ff">
-
-  <meta
-    name="description"
-    content="GeethikaLK — Sinhala Hymns, Lyrics, Chords, Favourites and Offline Access."
-  >
-
-  <title>GeethikaLK — Sinhala Hymns</title>
+  <meta name="description" content="GeethikaLK — සිංහල ගීතිකා, Chords, ප්‍රියතම ගීතිකා සහ Offline පහසුකම්.">
+  <title>GeethikaLK — සිංහල ගීතිකා</title>
 
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.json">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="./styles.css">
 </head>
@@ -55,11 +46,14 @@
           <i></i>
           <span>Online</span>
         </span>
+
+        <a class="admin-link" href="./admin.html">
+          Admin <span aria-hidden="true">↗</span>
+        </a>
       </div>
 
     </div>
   </header>
-
 
   <!-- SIDEBAR OVERLAY -->
   <div
@@ -67,7 +61,6 @@
     id="sidebar-overlay"
     hidden
   ></div>
-
 
   <!-- SIDEBAR -->
   <aside
@@ -85,7 +78,7 @@
 
         <span>
           <strong>GeethikaLK</strong>
-          <small>Sinhala Hymns</small>
+          <small>සිංහල ගීතිකා</small>
         </span>
       </a>
 
@@ -100,8 +93,13 @@
 
     </div>
 
+    <div class="sidebar-welcome">
+      <span class="sidebar-welcome-icon" aria-hidden="true">🎵</span>
+      <h2>ආයුබෝවන්!</h2>
+      <p>ඔබේ ප්‍රියතම ගීතිකා සොයාගන්න.</p>
+    </div>
 
-    <nav class="sidebar-nav" aria-label="Main menu">
+    <nav class="sidebar-nav" aria-label="App menu">
 
       <p class="sidebar-label">LIBRARY</p>
 
@@ -125,7 +123,6 @@
         <span class="sidebar-item-arrow" aria-hidden="true">›</span>
       </button>
 
-
       <p class="sidebar-label">PERSONALIZE</p>
 
       <button
@@ -147,7 +144,6 @@
         <span>About Us</span>
         <span class="sidebar-item-arrow" aria-hidden="true">›</span>
       </button>
-
 
       <p class="sidebar-label">GET IN TOUCH</p>
 
@@ -173,18 +169,14 @@
 
     </nav>
 
-
     <div class="sidebar-footer">
       <span class="sidebar-footer-cross" aria-hidden="true">✝</span>
       <p>GeethikaLK</p>
-      <small>Sinhala Hymns</small>
-      <small class="sidebar-version">
-        Founder &amp; Developer — Emal Kumarasiri
-      </small>
+      <small>සිංහල ගීතිකා</small>
+      <small class="sidebar-version">Made with care by Emal kumarasiri</small>
     </div>
 
   </aside>
-
 
   <!-- SETTINGS DIALOG -->
   <dialog class="app-dialog" id="settings-dialog">
@@ -192,7 +184,7 @@
     <div class="dialog-header">
       <div>
         <span class="dialog-eyebrow">PERSONALIZE</span>
-        <h2 id="settings-title">Settings</h2>
+        <h2 id="settings-title">⚙️ Settings</h2>
       </div>
 
       <button
@@ -203,12 +195,12 @@
       >✕</button>
     </div>
 
-
     <div class="dialog-content">
 
       <div class="settings-option">
         <div class="settings-option-text">
           <strong>Dark Mode</strong>
+          <p>අඳුරු පෙනුම භාවිතා කරන්න.</p>
         </div>
 
         <label class="switch-control">
@@ -217,14 +209,13 @@
         </label>
       </div>
 
-
       <div class="settings-option">
         <div class="settings-option-text">
           <strong>Lyrics Font Size</strong>
+          <p>ගීතිකාවල අකුරු ප්‍රමාණය වෙනස් කරන්න.</p>
         </div>
 
         <div class="font-size-controls">
-
           <button
             type="button"
             id="settings-font-down"
@@ -236,25 +227,22 @@
             id="settings-font-up"
             aria-label="Increase lyrics font size"
           >A+</button>
-
         </div>
       </div>
 
+      <p class="settings-note">
+        ඔබට පහසු ආකාරයට යෙදුම සකස් කරගන්න.
+      </p>
+
     </div>
 
-
     <div class="dialog-actions">
-      <button
-        class="dialog-primary"
-        type="button"
-        data-close-dialog
-      >
+      <button class="dialog-primary" type="button" data-close-dialog>
         Done
       </button>
     </div>
 
   </dialog>
-
 
   <!-- ABOUT DIALOG -->
   <dialog class="app-dialog about-dialog" id="about-dialog">
@@ -273,17 +261,16 @@
       >✕</button>
     </div>
 
-
     <div class="about-content">
 
       <div class="about-app-icon" aria-hidden="true">✝</div>
 
       <h3>GeethikaLK</h3>
+      <p class="about-sinhala-title">සිංහල ගීතිකා</p>
 
       <p class="about-description">
-        GeethikaLK is an app for discovering Sinhala Christian hymns,
-        lyrics and chords. Search for hymns, adjust keys and save your
-        favourite hymns for quick access.
+        සිංහල ගීතිකා පහසුවෙන් සොයාගැනීමට, කියවීමට සහ
+        ප්‍රියතම ගීතිකා සුරැකීමට නිර්මාණය කළ යෙදුමකි.
       </p>
 
       <div class="about-divider"></div>
@@ -307,19 +294,13 @@
 
     </div>
 
-
     <div class="dialog-actions">
-      <button
-        class="dialog-primary"
-        type="button"
-        data-close-dialog
-      >
+      <button class="dialog-primary" type="button" data-close-dialog>
         Close
       </button>
     </div>
 
   </dialog>
-
 
   <!-- MAIN CONTENT -->
   <main class="app-shell">
@@ -328,7 +309,34 @@
     <section
       class="home-view"
       id="home-view"
+      aria-labelledby="home-title"
     >
+
+      <div class="hero-banner">
+
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="eyebrow-cross" aria-hidden="true">✝</span>
+            සිංහල ගීතිකා
+          </p>
+
+          <h1 id="home-title">
+            Choose a Hymn<span class="hero-dot">.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Lyrics, Chords, and Music — All in One Place.
+          </p>
+        </div>
+
+        <div class="hero-emblem" aria-hidden="true">
+          <span class="emblem-ring ring-one"></span>
+          <span class="emblem-ring ring-two"></span>
+          <span class="emblem-cross">✝</span>
+          <span class="emblem-rays">✦</span>
+        </div>
+
+      </div>
 
       <div class="catalog-section">
 
@@ -341,80 +349,58 @@
           <span class="song-count" id="song-count">0 Hymns</span>
         </div>
 
-
-        <!-- SEARCH -->
         <label class="search-wrap" for="song-search">
-
           <span class="search-icon" aria-hidden="true">⌕</span>
 
           <input
             id="song-search"
             type="search"
-            placeholder="Search for a hymn..."
+            placeholder="Search for a hymn…"
             autocomplete="off"
           >
 
-          <kbd>⌘</kbd>
-
+          <kbd>⌘ K</kbd>
         </label>
 
-
-        <!-- CATEGORIES -->
         <div
           class="category-bar"
           id="category-bar"
           role="group"
-          aria-label="Hymn Categories"
+          aria-label="Hymn Category"
         ></div>
 
-
-        <!-- SONG GRID -->
         <div
           class="song-grid"
           id="song-grid"
           aria-live="polite"
         ></div>
 
-
-        <!-- EMPTY STATE -->
         <div class="empty-state" id="empty-state" hidden>
-
           <span aria-hidden="true">✝</span>
-
           <h3>No Hymns Found</h3>
-
-          <p>
-            Try searching with a different word or category.
-          </p>
-
+          <p>Try searching again with a different word or category.</p>
         </div>
 
       </div>
 
     </section>
 
-
     <!-- INDIVIDUAL SONG VIEW -->
     <section
       class="song-view"
       id="song-view"
+      aria-labelledby="song-title"
       hidden
     >
 
-      <button
-        class="back-button"
-        id="back-button"
-        type="button"
-      >
+      <button class="back-button" id="back-button" type="button">
         <span aria-hidden="true">←</span>
         Hymn Collection
       </button>
 
-
       <div class="song-heading">
 
         <div>
-
           <div class="song-meta-line">
             <span class="song-number" id="view-number"></span>
             <span class="meta-separator">/</span>
@@ -422,32 +408,23 @@
           </div>
 
           <h1 id="song-title"></h1>
-
           <p class="original-key" id="original-key"></p>
-
         </div>
 
         <span class="song-cross" aria-hidden="true">✝</span>
 
       </div>
 
-
-      <!-- SONG CONTROLS -->
-      <div
-        class="song-toolbar"
-        role="toolbar"
-        aria-label="Hymn Controls"
-      >
+      <div class="song-toolbar" role="toolbar" aria-label="Hymn Controls">
 
         <div class="tool-group transpose-group">
-
           <span class="tool-caption">Key</span>
 
           <button
             class="tool-button"
             id="transpose-down"
             type="button"
-            aria-label="Decrease key"
+            aria-label="Key අඩු කරන්න"
           >−</button>
 
           <span class="current-key" id="current-key">Key: G</span>
@@ -456,32 +433,27 @@
             class="tool-button"
             id="transpose-up"
             type="button"
-            aria-label="Increase key"
+            aria-label="Key වැඩි කරන්න"
           >+</button>
-
         </div>
 
-
         <div class="tool-group font-group">
-
           <span class="tool-caption">Font Size</span>
 
           <button
             class="tool-button"
             id="font-down"
             type="button"
-            aria-label="Decrease font size"
+            aria-label="Font Size කුඩා කරන්න"
           >A−</button>
 
           <button
             class="tool-button"
             id="font-up"
             type="button"
-            aria-label="Increase font size"
+            aria-label="Font Size විශාල කරන්න"
           >A+</button>
-
         </div>
-
 
         <button
           class="tool-button scroll-button"
@@ -492,7 +464,6 @@
           <span aria-hidden="true">▶</span>
           <span>AutoScroll</span>
         </button>
-
 
         <button
           class="tool-button favourite-button"
@@ -507,13 +478,17 @@
 
       </div>
 
+      <div class="sample-notice" id="sample-notice" hidden>
+        <span aria-hidden="true">ⓘ</span>
+        This is sample text showing the chord format. Update the lyrics
+        you are authorized to use through the Admin panel.
+      </div>
 
-      <!-- LYRICS -->
       <article class="lyrics-card">
 
         <div class="lyrics-topline">
           <span>Lyrics and Chords</span>
-          <span class="lyrics-hint">Chords are shown in blue</span>
+          <span class="lyrics-hint">Chords are shown in orange</span>
         </div>
 
         <div
@@ -523,7 +498,6 @@
         ></div>
 
       </article>
-
 
       <div class="song-bottom-note">
         <span class="note-cross" aria-hidden="true">✝</span>
@@ -535,7 +509,6 @@
 
   </main>
 
-
   <!-- FOOTER -->
   <footer class="site-footer">
 
@@ -546,14 +519,14 @@
         GeethikaLK
       </span>
 
-      <span>Sinhala Hymns</span>
+      <span>සිංහල ගීතිකා</span>
+
+      <a href="./admin.html">Manage Hymns</a>
 
     </div>
 
   </footer>
 
-
-  <!-- JAVASCRIPT -->
   <script src="./app.js" defer></script>
 
 </body>
