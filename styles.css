@@ -107,3 +107,18 @@ button { color: inherit; }
 @media (max-width: 600px) { .header-inner { width: calc(100% - 28px); min-height: 60px; }.brand { font-size: 18px; }.brand-cross { width: 30px; height: 30px; font-size: 16px; }.header-actions { gap: 9px; }.offline-status { font-size: 9px; }.admin-link { padding: 6px 9px; font-size: 10px; }.app-shell { width: calc(100% - 28px); margin-top: 17px; }.hero-banner { min-height: 170px; padding: 23px 20px; border-radius: 17px; }.hero-banner h1 { font-size: 25px; }.hero-subtitle { max-width: 220px; font-size: 13px; }.hero-emblem { position: absolute; right: -21px; bottom: -24px; width: 120px; height: 120px; margin: 0; opacity: .58; }.emblem-cross { font-size: 45px; }.catalog-section { padding: 27px 0 0; }.catalog-top h2 { font-size: 21px; }.song-grid { grid-template-columns: 1fr; gap: 9px; }.song-card { min-height: 112px; padding: 13px 14px; }.card-title { margin: 7px 0 5px; font-size: 16px; }.category-bar { flex-wrap: nowrap; overflow-x: auto; padding: 2px 1px 5px; scrollbar-width: thin; }.category-button { flex: 0 0 auto; padding-inline: 12px; }.song-heading { padding: 18px 16px; }.song-heading h1 { font-size: 22px; }.song-toolbar { gap: 7px; padding: 10px; }.tool-group { gap: 4px; padding-right: 7px; }.tool-caption { font-size: 9px; }.tool-button { min-width: 31px; min-height: 32px; padding-inline: 7px; font-size: 10px; }.current-key { min-width: 50px; font-size: 10px; }.scroll-button { order: 3; }.favourite-button { margin-left: auto; }.favourite-label { display: none; }.lyrics-card { padding: 17px 15px 22px; }.lyrics-content { --lyrics-font-size: 22px; }.lyrics-hint { font-size: 8px; }.footer-inner { width: calc(100% - 28px); flex-wrap: wrap; justify-content: center; gap: 4px 12px; padding-block: 12px; text-align: center; }.admin-shell { width: calc(100% - 28px); margin-top: 17px; }.admin-top { align-items: start; }.admin-top h1 { font-size: 20px; }.admin-right { grid-template-columns: 1fr; }.json-panel { grid-column: auto; }.panel { padding: 15px; }.inline-fields { gap: 8px; }.admin-song-row { align-items: flex-start; }.admin-song-actions { flex-wrap: wrap; justify-content: end; }.login-card { padding: 23px; }.admin-warning { font-size: 9px; } }
 @media (max-width: 380px) { .offline-status { display: none; }.song-toolbar { justify-content: flex-start; }.transpose-group { border-right: 0; }.tool-caption { display: none; }.category-button { font-size: 10px; }.hero-banner { padding-inline: 16px; }.hero-banner h1 { max-width: 240px; font-size: 21px; } }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+
+/* Blue chords — larger and easier to read */
+.lyrics-content .chord-label {
+  color: #1976d2 !important;
+  font-size: 0.85em !important;
+  font-weight: 800 !important;
+  line-height: 1.45;
+}
+
+/* Blue chords in the Admin preview */
+.preview-lyrics .chord-label {
+  color: #1976d2 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
