@@ -1,0 +1,19 @@
+name: Build APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g @bubblewrap/cli
+      - run: |
+          mkdir apk && cd apk
+          bubblewrap init --manifest https://emalkumarasiri.github.io/app-/manifest.json --directory . --manifestUrl https://emalkumarasiri.github.io/app-/manifest.json
+          bubblewrap build --skipPwaValidation
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GeethikaLK-APK
+          path: apk/app/build/outputs/**/*.apk
