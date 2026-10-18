@@ -1,19 +1,168 @@
-name: Build APK
-on: [push]
+name: Build GeethikaLK APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
         with:
-          node-version: 20
-      - run: npm install -g @bubblewrap/cli
-      - run: |
-          mkdir apk && cd apk
-          bubblewrap init --manifest https://emalkumarasiri.github.io/app-/manifest.json --directory . --manifestUrl https://emalkumarasiri.github.io/app-/manifest.json
-          bubblewrap build --skipPwaValidation
-      - uses: actions/upload-artifact@v4
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Create Android WebView Project
+        shell: bash
+        run: |
+          set -e
+
+          # www ෆෝල්ඩරය සාදා සියලුම Web Files copy කරගැනීම
+          mkdir -p www
+          cp -r *.html *.css *.js *.json *.png *.svg www/ 2>/dev/null || true
+
+          # Android Project Directories නිර්මාණය
+          mkdir -p android/app/src/main/java/com/emalkumarasiri/geethikalk
+          mkdir -p android/app/src/main/assets/public
+
+          # Assets වලට Web files copy කිරීම
+          cp -r www/. android/app/src/main/assets/public/
+
+          # settings.gradle නිර්මාණය
+          cat > android/settings.gradle << 'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = 'GeethikaLK'
+          include ':app'
+          EOF
+
+          # build.gradle (Root) නිර්මාණය
+          cat > android/build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application' version '8.1.4' apply false
+          }
+          EOF
+
+          # build.gradle (App) නිර්මාණය
+          cat > android/app/build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.emalkumarasiri.geethikalk'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId 'com.emalkumarasiri.geethikalk'
+                  minSdk 23
+                  targetSdk 34
+                  versionCode 1
+                  versionName '1.0'
+              }
+          }
+
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+          }
+          EOF
+
+          # AndroidManifest.xml නිර්මාණය
+          cat > android/app/src/main/AndroidManifest.xml << 'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+
+              <application
+                  android:label="GeethikaLK"
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:usesCleartextTraffic="true">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # MainActivity.java නිර්මාණය
+          cat > android/app/src/main/java/com/emalkumarasiri/geethikalk/MainActivity.java << 'EOF'
+          package com.emalkumarasiri.geethikalk;
+
+          import android.os.Bundle;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import androidx.appcompat.app.AppCompatActivity;
+
+          public class MainActivity extends AppCompatActivity {
+
+              private WebView webView;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  webView = new WebView(this);
+                  webView.getSettings().setJavaScriptEnabled(true);
+                  webView.getSettings().setDomStorageEnabled(true);
+
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("file:///android_asset/public/index.html");
+
+                  setContentView(webView);
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) {
+                      webView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
+              }
+          }
+          EOF
+
+      - name: Generate Gradle Wrapper
+        run: |
+          cd android
+          gradle wrapper --gradle-version 8.2.1
+          chmod +x gradlew
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: GeethikaLK-APK
-          path: apk/app/build/outputs/**/*.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
