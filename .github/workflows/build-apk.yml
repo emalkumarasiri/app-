@@ -13,58 +13,177 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '17'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Prepare Offline Web Assets
+      - name: Prepare Offline Project Structure
+        shell: bash
         run: |
-          mkdir -p www
-          # Web Files සියල්ල www ෆෝල්ඩරයට Copy කිරීම
-          cp -r *.html *.css *.js *.json *.png *.svg www/ 2>/dev/null || true
+          set -e
 
-          # Service Worker/PWA Register වීම නවතා Offline Local Files පමණක් Load වන ලෙස සැකසීම
-          sed -i 's/navigator.serviceWorker.register/console.log/g' www/app.js || true
+          # 1. Assets ෆෝල්ඩර සාදා Web Files Copy කිරීම
+          mkdir -p android/app/src/main/assets/public
+          mkdir -p android/app/src/main/java/com/emalkumarasiri/geethikalk
 
-      - name: Initialize Capacitor Project
-        run: |
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          cp -r *.html *.css *.js *.json *.png *.svg android/app/src/main/assets/public/ 2>/dev/null || true
 
-          # Capacitor Configuration
-          cat > capacitor.config.json << 'EOF'
+          # 2. Path & PWA Service Worker Fixes (Crash වීම සම්පූර්ණයෙන්ම වළක්වයි)
+          sed -i 's/navigator.serviceWorker.register/console.log/g' android/app/src/main/assets/public/app.js || true
+
+          # 3. Clean manifest.json නිර්මාණය
+          cat > android/app/src/main/assets/public/manifest.json << 'EOF'
           {
-            "appId": "com.emalkumarasiri.geethikalk",
-            "appName": "GeethikaLK",
-            "webDir": "www",
-            "bundledWebRuntime": false,
-            "server": {
-              "androidScheme": "https"
-            }
+            "name": "GeethikaLK",
+            "short_name": "GeethikaLK",
+            "start_url": "./index.html",
+            "scope": "./",
+            "display": "standalone",
+            "background_color": "#ffffff",
+            "theme_color": "#7a0c0c"
           }
           EOF
 
-          npx cap add android
-          npx cap sync android
+          # 4. gradle.properties (AndroidX Fix)
+          cat > android/gradle.properties << 'EOF'
+          android.useAndroidX=true
+          android.enableJetifier=true
+          EOF
 
-          # Java 21 Compatibility Fix
-          sed -i 's/JAVA_17/JAVA_21/g' android/app/build.gradle || true
-          sed -i 's/VERSION_17/VERSION_21/g' android/app/build.gradle || true
+          # 5. settings.gradle
+          cat > android/settings.gradle << 'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = 'GeethikaLK'
+          include ':app'
+          EOF
+
+          # 6. Root build.gradle
+          cat > android/build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application' version '8.3.2' apply false
+          }
+          EOF
+
+          # 7. App build.gradle
+          cat > android/app/build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.emalkumarasiri.geethikalk'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId 'com.emalkumarasiri.geethikalk'
+                  minSdk 23
+                  targetSdk 34
+                  versionCode 1
+                  versionName '1.0'
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+              implementation 'androidx.webkit:webkit:1.8.0'
+          }
+          EOF
+
+          # 8. AndroidManifest.xml
+          cat > android/app/src/main/AndroidManifest.xml << 'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+
+              <application
+                  android:label="GeethikaLK"
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:hardwareAccelerated="true"
+                  android:usesCleartextTraffic="true">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # 9. MainActivity.java (Crash-Free Stable WebView)
+          cat > android/app/src/main/java/com/emalkumarasiri/geethikalk/MainActivity.java << 'EOF'
+          package com.emalkumarasiri.geethikalk;
+
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import androidx.appcompat.app.AppCompatActivity;
+
+          public class MainActivity extends AppCompatActivity {
+
+              private WebView webView;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  webView = new WebView(this);
+                  WebSettings settings = webView.getSettings();
+
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setAllowFileAccess(true);
+                  settings.setAllowContentAccess(true);
+                  settings.setDatabaseEnabled(true);
+
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("file:///android_asset/public/index.html");
+
+                  setContentView(webView);
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) {
+                      webView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
+              }
+          }
+          EOF
 
       - name: Build Debug APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
