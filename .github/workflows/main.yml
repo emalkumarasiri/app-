@@ -14,14 +14,15 @@ jobs:
           java-version: 17
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-      - name: Install deps
-        run: npm install || yarn install
+      - name: Install and Prebuild
+        run: |
+          npm install
+          npx expo prebuild --platform android --no-install || npx expo prebuild --platform android
       - name: Build APK
         run: |
-          cd android  npx expo prebuild --platform android  true
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --stacktrace
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
