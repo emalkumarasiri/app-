@@ -31,30 +31,8 @@ jobs:
           mkdir -p www
           cp -r *.html *.css *.js *.json *.png *.svg www/ 2>/dev/null || true
 
-          # Manifest.json එකේ path ප්‍රශ්නය නිවැරදි කිරීම (PWA Crash වෙන එක වැලැක්වීමට)
-          cat > www/manifest.json << 'EOF'
-          {
-            "name": "GeethikaLK",
-            "short_name": "GeethikaLK",
-            "start_url": "./index.html",
-            "scope": "./",
-            "display": "standalone",
-            "background_color": "#ffffff",
-            "theme_color": "#7a0c0c",
-            "icons": [
-              {
-                "src": "icon-192.png",
-                "sizes": "192x192",
-                "type": "image/png"
-              },
-              {
-                "src": "icon-512.png",
-                "sizes": "512x512",
-                "type": "image/png"
-              }
-            ]
-          }
-          EOF
+          # WebView Crash වෙන එක වැලැක්වීමට app.js හි Service Worker කොටස disable කිරීම
+          sed -i 's/navigator.serviceWorker.register/console.log/g' www/app.js || true
 
           # Android Project Directories නිර්මාණය
           mkdir -p android/app/src/main/java/com/emalkumarasiri/geethikalk
@@ -110,8 +88,8 @@ jobs:
                   applicationId 'com.emalkumarasiri.geethikalk'
                   minSdk 23
                   targetSdk 34
-                  versionCode 1
-                  versionName '1.0'
+                  versionCode 2
+                  versionName '1.1'
               }
           }
 
