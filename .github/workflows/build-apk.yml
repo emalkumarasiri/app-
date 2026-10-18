@@ -38,6 +38,12 @@ jobs:
           # Assets වලට Web files copy කිරීම
           cp -r www/. android/app/src/main/assets/public/
 
+          # gradle.properties නිර්මාණය (AndroidX සක්‍රීය කිරීම සඳහා)
+          cat > android/gradle.properties << 'EOF'
+          android.useAndroidX=true
+          android.enableJetifier=true
+          EOF
+
           # settings.gradle නිර්මාණය
           cat > android/settings.gradle << 'EOF'
           pluginManagement {
