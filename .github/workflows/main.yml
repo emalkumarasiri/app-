@@ -11,29 +11,28 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Build PWA to APK
         run: |
-          # www folder එක හදලා files ටික දානවා
           mkdir -p www
           cp -r *.html *.css *.js *.json *.png *.svg www/ 2>/dev/null || true
           cp -r *.png www/ 2>/dev/null || true
           ls -la www/
-
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
-          
-          # webDir = www විදියට හදනවා
           npx cap init "MyApp" "com.myapp.app" --web-dir="www"
           npx cap add android
           npx cap copy android
+
+      - name: Clean Gradle Cache
+        run: rm -rf ~/.gradle/caches/ && rm -rf android/.gradle
 
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew clean assembleDebug --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
