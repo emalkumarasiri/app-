@@ -38,7 +38,7 @@ jobs:
           # Assets වලට Web files copy කිරීම
           cp -r www/. android/app/src/main/assets/public/
 
-          # gradle.properties නිර්මාණය (AndroidX සක්‍රීය කිරීම සඳහා)
+          # gradle.properties නිර්මාණය
           cat > android/gradle.properties << 'EOF'
           android.useAndroidX=true
           android.enableJetifier=true
@@ -92,6 +92,7 @@ jobs:
 
           dependencies {
               implementation 'androidx.appcompat:appcompat:1.6.1'
+              implementation 'androidx.webkit:webkit:1.8.0'
           }
           EOF
 
@@ -103,11 +104,13 @@ jobs:
               <application
                   android:label="GeethikaLK"
                   android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:hardwareAccelerated="true"
                   android:usesCleartextTraffic="true">
 
                   <activity
                       android:name=".MainActivity"
-                      android:exported="true">
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
@@ -117,11 +120,12 @@ jobs:
           </manifest>
           EOF
 
-          # MainActivity.java නිර්මාණය
+          # MainActivity.java නිර්මාණය (Optimized WebView)
           cat > android/app/src/main/java/com/emalkumarasiri/geethikalk/MainActivity.java << 'EOF'
           package com.emalkumarasiri.geethikalk;
 
           import android.os.Bundle;
+          import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
           import androidx.appcompat.app.AppCompatActivity;
@@ -135,8 +139,14 @@ jobs:
                   super.onCreate(savedInstanceState);
 
                   webView = new WebView(this);
-                  webView.getSettings().setJavaScriptEnabled(true);
-                  webView.getSettings().setDomStorageEnabled(true);
+                  WebSettings settings = webView.getSettings();
+
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setAllowFileAccess(true);
+                  settings.setAllowContentAccess(true);
+                  settings.setDatabaseEnabled(true);
+                  settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
                   webView.setWebViewClient(new WebViewClient());
                   webView.loadUrl("file:///android_asset/public/index.html");
