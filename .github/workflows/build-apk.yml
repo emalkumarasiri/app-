@@ -20,7 +20,7 @@ jobs:
           java-version: '17'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Create Android WebView Project
         shell: bash
@@ -61,7 +61,7 @@ jobs:
           # build.gradle (Root) නිර්මාණය
           cat > android/build.gradle << 'EOF'
           plugins {
-              id 'com.android.application' version '8.1.4' apply false
+              id 'com.android.application' version '8.3.2' apply false
           }
           EOF
 
@@ -149,16 +149,10 @@ jobs:
           }
           EOF
 
-      - name: Generate Gradle Wrapper
-        run: |
-          cd android
-          gradle wrapper --gradle-version 8.2.1
-          chmod +x gradlew
-
       - name: Build Debug APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
