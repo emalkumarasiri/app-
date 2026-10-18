@@ -1,8 +1,8 @@
-
-name: Build APK
+name: Build APK with Capacitor
 
 on:
   push:
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -13,152 +13,54 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Create WebView Project
-        shell: bash
-        run: |
-          set -e
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
+      - name: Prepare Web Assets
+        run: |
           mkdir -p www
+          # Root එකේ ඇති web files www ෆෝල්ඩරයට copy කිරීම
+          cp -r *.html *.css *.js *.json *.png *.jpg *.svg www/ 2>/dev/null || true
 
-          cp *.html *.css *.js *.json www/ 2>/dev/null || true
-          cp *.png *.svg www/ 2>/dev/null || true
-
-          mkdir -p android/app/src/main/java/com/myapp/app
-          mkdir -p android/app/src/main/assets/public
-
-          cp -r www/. android/app/src/main/assets/public/
-
-          cat > android/settings.gradle << 'EOF'
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-
-          rootProject.name = 'MyApp'
-          include ':app'
-          EOF
-
-          cat > android/build.gradle << 'EOF'
-          plugins {
-              id 'com.android.application' version '8.1.4' apply false
-          }
-          EOF
-
-          cat > android/app/build.gradle << 'EOF'
-          plugins {
-              id 'com.android.application'
-          }
-
-          android {
-              namespace 'com.myapp.app'
-              compileSdk 34
-
-              defaultConfig {
-                  applicationId 'com.myapp.app'
-                  minSdk 23
-                  targetSdk 34
-                  versionCode 1
-                  versionName '1.0'
-              }
-          }
-
-          dependencies {
-              implementation 'androidx.appcompat:appcompat:1.6.1'
-          }
-          EOF
-
-          cat > android/app/src/main/AndroidManifest.xml << 'EOF'
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-              <uses-permission android:name="android.permission.INTERNET" />
-
-              <application
-                  android:label="MyApp"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
-                  android:usesCleartextTraffic="true">
-
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-
-                  </activity>
-              </application>
-          </manifest>
-          EOF
-
-          cat > android/app/src/main/java/com/myapp/app/MainActivity.java << 'EOF'
-          package com.myapp.app;
-
-          import android.os.Bundle;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-          import androidx.appcompat.app.AppCompatActivity;
-
-          public class MainActivity extends AppCompatActivity {
-
-              private WebView webView;
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-
-                  webView = new WebView(this);
-                  webView.getSettings().setJavaScriptEnabled(true);
-                  webView.getSettings().setDomStorageEnabled(true);
-
-                  webView.setWebViewClient(new WebViewClient());
-                  webView.loadUrl("file:///android_asset/public/index.html");
-
-                  setContentView(webView);
-              }
-
-              @Override
-              public void onBackPressed() {
-                  if (webView != null && webView.canGoBack()) {
-                      webView.goBack();
-                  } else {
-                      super.onBackPressed();
-                  }
-              }
-          }
-          EOF
-
-      - name: Generate Gradle Wrapper
+      - name: Initialize Capacitor and Build Android
         run: |
-          cd android
-          gradle wrapper --gradle-version 8.2.1
-          chmod +x gradlew
+          # Capacitor install කර ගැනීම
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+
+          # Capacitor config file එකක් සාදා ගැනීම
+          cat > capacitor.config.json << 'EOF'
+          {
+            "appId": "com.emalkumarasiri.app",
+            "appName": "MyApp",
+            "webDir": "www",
+            "bundledWebRuntime": false
+          }
+          EOF
+
+          # Android Project එක එකතු කිරීම සහ Sync කිරීම
+          npx cap add android
+          npx cap sync android
 
       - name: Build Debug APK
         run: |
           cd android
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-apk
+          name: my-app-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
