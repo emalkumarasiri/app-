@@ -15,18 +15,19 @@ jobs:
 
       - name: Build PWA to APK
         run: |
-          # 1. Capacitor install කරනවා website එක APK කරන්න
+          # www folder එක හදලා files ටික දානවා
+          mkdir -p www
+          cp -r *.html *.css *.js *.json *.png *.svg www/ 2>/dev/null || true
+          cp -r *.png www/ 2>/dev/null || true
+          ls -la www/
+
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
           
-          # 2. Capacitor init
-          npx cap init "MyApp" "com.myapp.app" --web-dir="."
-          
-          # 3. Android project එක හදනවා
+          # webDir = www විදියට හදනවා
+          npx cap init "MyApp" "com.myapp.app" --web-dir="www"
           npx cap add android
-          
-          # 4. Web files ටික copy කරනවා
-          npx cap copy
+          npx cap copy android
 
       - name: Build APK
         run: |
