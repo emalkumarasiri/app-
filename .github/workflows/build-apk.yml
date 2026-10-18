@@ -1,4 +1,4 @@
-name: Build GeethikaLK APK
+name: Build GeethikaLK Offline APK
 
 on:
   push:
@@ -13,6 +13,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
@@ -22,160 +27,44 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Create Android WebView Project
-        shell: bash
+      - name: Prepare Offline Web Assets
         run: |
-          set -e
-
-          # www ෆෝල්ඩරය සාදා සියලුම Web Files copy කරගැනීම
           mkdir -p www
+          # Web Files සියල්ල www ෆෝල්ඩරයට Copy කිරීම
           cp -r *.html *.css *.js *.json *.png *.svg www/ 2>/dev/null || true
 
-          # WebView Crash වෙන එක වැලැක්වීමට app.js හි Service Worker කොටස disable කිරීම
+          # Service Worker/PWA Register වීම නවතා Offline Local Files පමණක් Load වන ලෙස සැකසීම
           sed -i 's/navigator.serviceWorker.register/console.log/g' www/app.js || true
 
-          # Android Project Directories නිර්මාණය
-          mkdir -p android/app/src/main/java/com/emalkumarasiri/geethikalk
-          mkdir -p android/app/src/main/assets/public
+      - name: Initialize Capacitor Project
+        run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
 
-          # Assets වලට Web files copy කිරීම
-          cp -r www/. android/app/src/main/assets/public/
-
-          # gradle.properties නිර්මාණය
-          cat > android/gradle.properties << 'EOF'
-          android.useAndroidX=true
-          android.enableJetifier=true
-          EOF
-
-          # settings.gradle නිර්මාණය
-          cat > android/settings.gradle << 'EOF'
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = 'GeethikaLK'
-          include ':app'
-          EOF
-
-          # build.gradle (Root) නිර්මාණය
-          cat > android/build.gradle << 'EOF'
-          plugins {
-              id 'com.android.application' version '8.3.2' apply false
+          # Capacitor Configuration (Local File System Mode)
+          cat > capacitor.config.json << 'EOF'
+          {
+            "appId": "com.emalkumarasiri.geethikalk",
+            "appName": "GeethikaLK",
+            "webDir": "www",
+            "bundledWebRuntime": false,
+            "server": {
+              "androidScheme": "https"
+            }
           }
           EOF
 
-          # build.gradle (App) නිර්මාණය
-          cat > android/app/build.gradle << 'EOF'
-          plugins {
-              id 'com.android.application'
-          }
-
-          android {
-              namespace 'com.emalkumarasiri.geethikalk'
-              compileSdk 34
-
-              defaultConfig {
-                  applicationId 'com.emalkumarasiri.geethikalk'
-                  minSdk 23
-                  targetSdk 34
-                  versionCode 2
-                  versionName '1.1'
-              }
-          }
-
-          dependencies {
-              implementation 'androidx.appcompat:appcompat:1.6.1'
-              implementation 'androidx.webkit:webkit:1.8.0'
-          }
-          EOF
-
-          # AndroidManifest.xml නිර්මාණය
-          cat > android/app/src/main/AndroidManifest.xml << 'EOF'
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.INTERNET" />
-
-              <application
-                  android:label="GeethikaLK"
-                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
-                  android:hardwareAccelerated="true"
-                  android:usesCleartextTraffic="true">
-
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true"
-                      android:configChanges="orientation|screenSize">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
-
-          # MainActivity.java නිර්මාණය
-          cat > android/app/src/main/java/com/emalkumarasiri/geethikalk/MainActivity.java << 'EOF'
-          package com.emalkumarasiri.geethikalk;
-
-          import android.os.Bundle;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-          import androidx.appcompat.app.AppCompatActivity;
-
-          public class MainActivity extends AppCompatActivity {
-
-              private WebView webView;
-
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-
-                  webView = new WebView(this);
-                  WebSettings settings = webView.getSettings();
-
-                  settings.setJavaScriptEnabled(true);
-                  settings.setDomStorageEnabled(true);
-                  settings.setAllowFileAccess(true);
-                  settings.setAllowContentAccess(true);
-                  settings.setDatabaseEnabled(true);
-                  settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-
-                  webView.setWebViewClient(new WebViewClient());
-                  webView.loadUrl("file:///android_asset/public/index.html");
-
-                  setContentView(webView);
-              }
-
-              @Override
-              public void onBackPressed() {
-                  if (webView != null && webView.canGoBack()) {
-                      webView.goBack();
-                  } else {
-                      super.onBackPressed();
-                  }
-              }
-          }
-          EOF
+          npx cap add android
+          npx cap sync android
 
       - name: Build Debug APK
         run: |
           cd android
-          gradle assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: GeethikaLK-APK
+          name: GeethikaLK-Offline-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
