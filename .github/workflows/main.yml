@@ -147,10 +147,16 @@ jobs:
           }
           EOF
 
+      - name: Generate Gradle Wrapper
+        run: |
+          cd android
+          gradle wrapper --gradle-version 8.2.1
+          chmod +x gradlew
+
       - name: Build Debug APK
         run: |
           cd android
-          gradle assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
