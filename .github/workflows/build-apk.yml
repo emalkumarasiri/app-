@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -41,7 +41,7 @@ jobs:
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
 
-          # Capacitor Configuration (Local File System Mode)
+          # Capacitor Configuration
           cat > capacitor.config.json << 'EOF'
           {
             "appId": "com.emalkumarasiri.geethikalk",
@@ -56,6 +56,10 @@ jobs:
 
           npx cap add android
           npx cap sync android
+
+          # Java 21 Compatibility Fix
+          sed -i 's/JAVA_17/JAVA_21/g' android/app/build.gradle || true
+          sed -i 's/VERSION_17/VERSION_21/g' android/app/build.gradle || true
 
       - name: Build Debug APK
         run: |
