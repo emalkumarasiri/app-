@@ -13,14 +13,35 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Find Project Folder
+        run: |
+          ls -la
+          echo "--- finding package.json ---"
+          find . -name "package.json" -type f | head -20
+          # package.json තියෙන folder එක අරන් ENV එකට දාගමු
+          DIR=$(dirname $(find . -name "package.json" -type f | head -n 1))
+          echo "PROJECT_DIR=$DIR" >> $GITHUB_ENV
+          echo "Found project in: $DIR"
+
       - name: Install and Prebuild
         run: |
-          npm install
+          cd ${{ env.PROJECT_DIR }}
+          pwd
+          ls -la
+          npm install --legacy-peer-deps
           npx expo prebuild --platform android --no-install  npx expo prebuild --platform android  true
+          # prebuild එකෙන් android folder එක project root එකට දායි, නැත්තම් PROJECT_DIR ඇතුලට දායි
+          ls -la
+          ls -la android || true
 
       - name: Build APK
         run: |
-          cd android
+          # android folder එක කොහෙද තියෙන්නේ කියලා හොයමු
+          if [ -d "android" ]; then
+            cd android
+          else
+            cd ${{ env.PROJECT_DIR }}/android
+          fi
           chmod +x gradlew
           ./gradlew assembleDebug
 
@@ -28,4 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            ${{ env.PROJECT_DIR }}/android/app/build/outputs/apk/debug/*.apk
+            **/app-debug.apk
