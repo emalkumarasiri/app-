@@ -9,7 +9,7 @@
   const CATEGORIES = [
     'All',
     'Namaskara',
-    'Kurasiya',
+    'Kurusiya',
     'Christmas',
     'Other'
   ];
